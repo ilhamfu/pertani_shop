@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pertani_shop/pages/main_page.dart';
+import 'package:pertani_shop/pages/product_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: MainPage(),
+      home: ProductPage(),
     );
   }
 }
