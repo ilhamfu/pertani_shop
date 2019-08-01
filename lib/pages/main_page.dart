@@ -1,7 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:pertani_shop/widgets/header.dart';
-
 import 'package:pertani_shop/widgets/sliver_delegate.dart';
 
 class MainPage extends StatefulWidget {
@@ -108,22 +106,17 @@ class __ProductItemState extends State<_ProductItem> {
   ScrollController _scrollController = new ScrollController();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 
   void _doScroll() async {
     await _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent,
-      curve: Curves.easeIn,
-      duration: Duration(milliseconds: 3000)
-    );
-    await Future.delayed(Duration(seconds:1));
-    await _scrollController.animateTo(
-      0,
-      curve: Curves.easeOut,
-      duration: Duration(milliseconds: 1000)
-    );
+        _scrollController.position.maxScrollExtent,
+        curve: Curves.easeIn,
+        duration: Duration(milliseconds: 3000));
+    await Future.delayed(Duration(seconds: 1));
+    await _scrollController.animateTo(0,
+        curve: Curves.easeOut, duration: Duration(milliseconds: 1000));
   }
 
   @override
@@ -195,7 +188,6 @@ class __NewsCarouselState extends State<_NewsCarousel> {
   double _page = 0;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _pageController.addListener(() {
       setState(() {
@@ -206,7 +198,6 @@ class __NewsCarouselState extends State<_NewsCarousel> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _pageController.dispose();
     super.dispose();
   }
@@ -239,7 +230,7 @@ class __NewsCarouselState extends State<_NewsCarousel> {
                       Container(
                         alignment: Alignment.center,
                         child: CachedNetworkImage(
-                          imageUrl: "https://picsum.photos/id/${idx}/250/200",
+                          imageUrl: "https://picsum.photos/id/$idx/250/200",
                         ),
                       ),
                       Positioned.fill(
@@ -264,7 +255,7 @@ class __NewsCarouselState extends State<_NewsCarousel> {
                         child: Container(
                             padding: EdgeInsets.only(bottom: 25),
                             child: Align(
-                              child: Text("This is the ${idx} news",
+                              child: Text("This is the $idx news",
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.w700)),
@@ -314,3 +305,98 @@ class _PageIndicator extends StatelessWidget {
   }
 }
 
+class Header extends StatefulWidget {
+  const Header({Key key}) : super(key: key);
+
+  @override
+  _HeaderState createState() => _HeaderState();
+}
+
+class _HeaderState extends State<Header> {
+  FocusNode searchFocusNode = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    searchFocusNode.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    searchFocusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.white,
+      padding: EdgeInsets.symmetric(horizontal: 5),
+      child: Row(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.fromLTRB(2, 2, 2, 1),
+            decoration: BoxDecoration(
+                color: Colors.green,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    bottomLeft: Radius.circular(10)),
+                border: Border.all(color: Colors.green, width: 3)),
+            child: Icon(
+              Icons.search,
+              color: Colors.white,
+            ),
+          ),
+          Expanded(
+              child: TextField(
+                  maxLines: 1,
+                  focusNode: searchFocusNode,
+                  decoration: InputDecoration(
+                    hintText: "Search",
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 7, horizontal: 10),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(10),
+                            bottomRight: Radius.circular(10))),
+                  ))),
+          !searchFocusNode.hasFocus
+              ? Row(
+                  children: <Widget>[
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(3, 3, 3, 2),
+                      decoration: BoxDecoration(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.green, width: 2)),
+                      child: Icon(
+                        Icons.chat,
+                        color: Colors.green,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),Container(
+                      padding: EdgeInsets.fromLTRB(3, 3, 3, 2),
+                      decoration: BoxDecoration(
+                          color: Colors.green,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.green, width: 2)),
+                      child: Icon(
+                        Icons.notifications,
+                        color: Colors.green,
+                      ),
+                    ),
+                  ],
+                )
+              : Container(),
+        ],
+      ),
+    );
+  }
+}
