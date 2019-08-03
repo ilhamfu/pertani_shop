@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pertani_shop/pages/main_page.dart';
 import 'package:pertani_shop/pages/product_page.dart';
 
