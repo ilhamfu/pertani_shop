@@ -31,7 +31,7 @@ class _MainPageState extends State<MainPage> {
             slivers: <Widget>[
               SliverPersistentHeader(
                 pinned: true,
-                delegate: SliverAppBarDelegate(
+                delegate: CustomSliverDelegate(
                     child: Header(), maxHeight: 50, minHeight: 50),
               ),
               SliverList(
@@ -41,7 +41,7 @@ class _MainPageState extends State<MainPage> {
               ),
               SliverPersistentHeader(
                 pinned: true,
-                delegate: SliverAppBarDelegate(
+                delegate: CustomSliverDelegate(
                   minHeight: 40,
                   maxHeight: 40,
                   child: Container(

@@ -1,115 +1,11 @@
-import 'dart:math' as math;
-
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:pertani_shop/pages/product_detail_page.dart';
 import 'package:pertani_shop/widgets/sliver_delegate.dart';
-
-class ProductCardControl extends StatelessWidget {
-  const ProductCardControl({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        color: Colors.white,
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Container(
-            height: ScreenUtil().setWidth(40),
-            width: double.maxFinite,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
-              color: Colors.green,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  "Tersedia",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  "20000",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Container(
-                      decoration:
-                          BoxDecoration(borderRadius: BorderRadius.circular(5)),
-                      width: ScreenUtil().setWidth(70),
-                      height: ScreenUtil().setWidth(70),
-                      child: Material(
-                        borderRadius: BorderRadius.circular(5),
-                        color: Colors.orange,
-                        child: InkWell(
-                          onTap: () {},
-                          splashColor: Colors.white,
-                          child: Icon(
-                            Icons.chat,
-                            size: ScreenUtil().setWidth(50),
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5)),
-                        width: ScreenUtil().setWidth(70),
-                        height: ScreenUtil().setWidth(70),
-                        child: Material(
-                          borderRadius: BorderRadius.circular(5),
-                          color: Colors.orange,
-                          child: InkWell(
-                            onTap: () {},
-                            splashColor: Colors.white,
-                            child: Icon(
-                              Icons.add_shopping_cart,
-                              size: ScreenUtil().setWidth(50),
-                              color: Colors.white,
-                            ),
-                          ),
-                        )),
-                  ],
-                ),
-                Row(
-                  children: <Widget>[],
-                )
-              ],
-            ),
-          ),
-          Container(
-            height: ScreenUtil().setHeight(40),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(5)),
-              color: Colors.green,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class ProductPage extends StatefulWidget {
   const ProductPage({Key key}) : super(key: key);
@@ -118,20 +14,7 @@ class ProductPage extends StatefulWidget {
   _ProductPageState createState() => _ProductPageState();
 }
 
-class SlidingProductCard extends StatefulWidget {
-  final int index;
-  const SlidingProductCard({
-    Key key,
-    this.index,
-  }) : super(key: key);
-  @override
-  _SlidingProductCardState createState() => _SlidingProductCardState();
-}
-
 class __FilterDrawerState extends State<_FilterDrawer> {
-  List<Map<String, dynamic>> filterCategory;
-  Map<String, dynamic> filterSetting;
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -160,7 +43,7 @@ class __FilterDrawerState extends State<_FilterDrawer> {
                     children: <Widget>[
                       RaisedButton(
                         onPressed: () {
-                          widget.updateFilter(filterSetting);
+                          widget.updateFilter();
                           Navigator.of(context).pop();
                         },
                         child: Text("Simpan Perubahan",
@@ -189,46 +72,29 @@ class __FilterDrawerState extends State<_FilterDrawer> {
     );
   }
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-    filterCategory = new List.from(widget.filterCategory);
-    filterSetting = new Map.from(widget.filterSetting);
-  }
-
   setCategoryFilter(Map<String, dynamic> cat) {
-    setState(() {
-      filterSetting["category"]["id"] == cat["id"]
-          ? filterSetting["category"]["id"] = -1
-          : filterSetting["category"] = new Map.from(cat);
-    });
+    widget.filterSetting["category"]["id"] == cat["id"]
+        ? widget.filterSetting["category"]["id"] = -1
+        : widget.filterSetting["category"] = new Map.from(cat);
+    widget.updateFilter();
   }
 
   setStarFilter(int num) {
-    setState(() {
-      filterSetting["star"] = num == filterSetting["star"] ? 0 : num;
-    });
+    widget.filterSetting["star"] =
+        num == widget.filterSetting["star"] ? 0 : num;
+    widget.updateFilter();
   }
 
-  setPriceFilter({int max: -1, int min: -1}) {
-    if (max >= -1) {
-      setState(() {
-        filterSetting["price"]["max"] = max;
-      });
-    }
-    if (min >= -1) {
-      setState(() {
-        filterSetting["price"]["min"] = min;
-      });
-    }
+  setPriceFilter({int max = -1, int min = -1}) {
+    widget.filterSetting["price"]["max"] = max;
+    widget.filterSetting["price"]["min"] = min;
+    widget.updateFilter();
   }
 
   List<Widget> _buildCategoryFilterDrawer() {
-    int filtered = filterSetting["category"]["id"];
+    int filtered = widget.filterSetting["category"]["id"];
     List<Widget> output = [];
-    for (var item in filterCategory) {
+    for (var item in widget.filterCategory) {
       var inlist = filtered == item["id"];
       output.add(InkWell(
         onTap: () {
@@ -323,10 +189,10 @@ class __FilterDrawerState extends State<_FilterDrawer> {
                       color: Colors.green,
                       fontWeight: FontWeight.w700)),
               SizedBox(height: ScreenUtil().setHeight(20)),
-              new _PriceRangeFilter(
-                min: 0,
-                max: 1000000,
+              _PriceRangeFilter(
                 setPriceFilter: setPriceFilter,
+                min: widget.filterSetting["price"]["min"],
+                max: widget.filterSetting["price"]["max"],
               ),
               SizedBox(height: ScreenUtil().setHeight(20)),
             ],
@@ -337,7 +203,7 @@ class __FilterDrawerState extends State<_FilterDrawer> {
   }
 
   List<Widget> _buildStarFilter() {
-    int star = filterSetting["star"];
+    int star = widget.filterSetting["star"];
     List<Widget> output = [];
     for (int i = 1; i <= 5; i++) {
       List<Widget> inner = [];
@@ -400,10 +266,13 @@ class __HeaderState extends State<_Header> {
           ),
           Expanded(
               child: TextField(
+                  controller: _searchController,
                   maxLines: 1,
                   onSubmitted: (value) {
                     widget.setNameFilter(value);
-                    _searchController.text = "";
+                    setState(() {
+                      _searchController.text = "";
+                    });
                   },
                   focusNode: searchFocusNode,
                   decoration: InputDecoration(
@@ -469,8 +338,18 @@ class __HeaderState extends State<_Header> {
 }
 
 class __PriceRangeFilterState extends State<_PriceRangeFilter> {
-  RangeValues currentValue;
   TextEditingController minTextController, maxTextController;
+  FocusNode minTextNode, maxTextNode;
+
+  _setPriceFilter() {
+    widget.setPriceFilter(
+        max: maxTextController.text != ""
+            ? int.parse(maxTextController.text)
+            : -1,
+        min: minTextController.text != ""
+            ? int.parse(minTextController.text)
+            : -1);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -480,14 +359,17 @@ class __PriceRangeFilterState extends State<_PriceRangeFilter> {
         children: <Widget>[
           Expanded(
               child: TextField(
-                  onSubmitted: (value) {
-                    widget.setPriceFilter(min: value);
+                  onEditingComplete: () {
+                    _setPriceFilter();
+                    minTextNode.unfocus();
                   },
+                  focusNode: minTextNode,
                   controller: minTextController,
                   maxLines: 1,
                   keyboardType: TextInputType.numberWithOptions(
                       signed: false, decimal: false),
                   decoration: InputDecoration(
+                      hintText: "Min",
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.symmetric(
                           horizontal: ScreenUtil().setWidth(5),
@@ -500,14 +382,17 @@ class __PriceRangeFilterState extends State<_PriceRangeFilter> {
           ),
           Expanded(
               child: TextField(
-                  onSubmitted: (value) {
-                    widget.setPriceFilter(max: value);
+                  focusNode: maxTextNode,
+                  onEditingComplete: () {
+                    _setPriceFilter();
+                    maxTextNode.unfocus();
                   },
                   keyboardType: TextInputType.numberWithOptions(
                       signed: false, decimal: false),
                   controller: maxTextController,
                   maxLines: 1,
                   decoration: InputDecoration(
+                      hintText: "Max",
                       border: OutlineInputBorder(),
                       contentPadding: EdgeInsets.symmetric(
                           horizontal: ScreenUtil().setWidth(5),
@@ -522,6 +407,8 @@ class __PriceRangeFilterState extends State<_PriceRangeFilter> {
     // TODO: implement dispose
     minTextController.dispose();
     maxTextController.dispose();
+    maxTextNode.dispose();
+    minTextNode.dispose();
     super.dispose();
   }
 
@@ -529,11 +416,18 @@ class __PriceRangeFilterState extends State<_PriceRangeFilter> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    currentValue = RangeValues(widget.min / 1000, widget.max / 1000);
-    minTextController =
-        new TextEditingController(text: widget.min.toInt().toString());
-    maxTextController =
-        new TextEditingController(text: widget.max.toInt().toString());
+    maxTextNode = new FocusNode();
+    minTextNode = new FocusNode();
+    minTextController = new TextEditingController(
+        text: widget.min > -1 ? widget.min.toString() : "");
+    maxTextController = new TextEditingController(
+        text: widget.max > -1 ? widget.max.toString() : "");
+    maxTextNode.addListener(() {
+      if (!maxTextNode.hasFocus) _setPriceFilter();
+    });
+    minTextNode.addListener(() {
+      if (!minTextNode.hasFocus) _setPriceFilter();
+    });
   }
 }
 
@@ -563,14 +457,13 @@ class _Header extends StatefulWidget {
 }
 
 class _PriceRangeFilter extends StatefulWidget {
-  final double max;
-  final double min;
   final Function setPriceFilter;
+  final int max, min;
   const _PriceRangeFilter({
     Key key,
+    @required this.setPriceFilter,
     @required this.max,
     @required this.min,
-    @required this.setPriceFilter,
   }) : super(key: key);
   @override
   __PriceRangeFilterState createState() => __PriceRangeFilterState();
@@ -586,145 +479,259 @@ class _ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        ClipRRect(
-          borderRadius: BorderRadius.circular(5),
-          child: CachedNetworkImage(
-            fit: BoxFit.fill,
-            placeholder: (context, data) {
-              return Container(
-                color: Colors.white,
-                child: Center(child: CircularProgressIndicator()),
-              );
-            },
-            imageUrl: "https://picsum.photos/id/${index % 10 + 1}/300/400",
-          ),
-        ),
-        Positioned.fill(
-          child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [
-                      Colors.black54,
-                      Colors.black12,
-                      Colors.transparent,
-                    ],
-                    stops: [
-                      0.2,
-                      0.4,
-                      0.9
-                    ])),
-          ),
-        ),
-        Positioned.fill(
-          child: Container(
-            padding: EdgeInsets.symmetric(
-                horizontal: ScreenUtil().setWidth(5),
-                vertical: ScreenUtil().setWidth(5)),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: ScreenUtil().setWidth(5),
-                          vertical: ScreenUtil().setWidth(1)),
-                      width: ScreenUtil().setWidth(95),
-                      decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.8),
-                          border: Border.all(
-                              color: Colors.deepOrange,
-                              width: ScreenUtil().setWidth(2)),
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Text(
-                        "Rp. 6000000",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: ScreenUtil().setSp(13),
-                            color: Colors.deepOrange,
-                            fontWeight: FontWeight.w700),
-                      ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: ScreenUtil().setWidth(5),
-                          vertical: ScreenUtil().setWidth(1)),
-                      width: ScreenUtil().setWidth(50),
-                      decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.8),
-                          border: Border.all(
-                              color: Colors.deepOrange,
-                              width: ScreenUtil().setWidth(2)),
-                          borderRadius: BorderRadius.circular(5)),
-                      child: Row(
-                        children: <Widget>[
-                          Text(
-                            "5.0",
-                            style: TextStyle(
-                                fontSize: ScreenUtil().setSp(13),
-                                color: Colors.deepOrange,
-                                fontWeight: FontWeight.w700),
-                          ),
-                          Icon(
-                            Icons.star,
-                            color: Colors.deepOrange,
-                            size: ScreenUtil().setWidth(15),
-                          )
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Text(
-                  "This is the name of productasdasdas",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
-                )
-              ],
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).push(CupertinoPageRoute(fullscreenDialog: true,builder: (context) {
+          return ProductDetailPage();
+        }));
+        FocusScope.of(context).unfocus();
+      },
+      child: Stack(
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: CachedNetworkImage(
+              fit: BoxFit.fill,
+              placeholder: (context, data) {
+                return Container(
+                  color: Colors.white,
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              },
+              imageUrl: "https://picsum.photos/id/${index % 10 + 1}/300/400",
             ),
           ),
-        )
-      ],
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        Colors.black54,
+                        Colors.black12,
+                        Colors.transparent,
+                      ],
+                      stops: [
+                        0.2,
+                        0.4,
+                        0.9
+                      ])),
+            ),
+          ),
+          Positioned.fill(
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: ScreenUtil().setWidth(5),
+                  vertical: ScreenUtil().setWidth(5)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: ScreenUtil().setWidth(5),
+                            vertical: ScreenUtil().setWidth(1)),
+                        width: ScreenUtil().setWidth(95),
+                        decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.8),
+                            border: Border.all(
+                                color: Colors.deepOrange,
+                                width: ScreenUtil().setWidth(2)),
+                            borderRadius: BorderRadius.circular(5)),
+                        child: Text(
+                          "Rp. 6000000",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: ScreenUtil().setSp(13),
+                              color: Colors.deepOrange,
+                              fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: ScreenUtil().setWidth(5),
+                            vertical: ScreenUtil().setWidth(1)),
+                        width: ScreenUtil().setWidth(50),
+                        decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.8),
+                            border: Border.all(
+                                color: Colors.deepOrange,
+                                width: ScreenUtil().setWidth(2)),
+                            borderRadius: BorderRadius.circular(5)),
+                        child: Row(
+                          children: <Widget>[
+                            Text(
+                              "5.0",
+                              style: TextStyle(
+                                  fontSize: ScreenUtil().setSp(13),
+                                  color: Colors.deepOrange,
+                                  fontWeight: FontWeight.w700),
+                            ),
+                            Icon(
+                              Icons.star,
+                              color: Colors.deepOrange,
+                              size: ScreenUtil().setWidth(15),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    "This is the name of productasdasdas",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
 
 class _ProductPageBody extends StatelessWidget {
   final Map<String, dynamic> filterSetting;
-
+  final Function updateFilter;
   final Function setNameFilter;
   const _ProductPageBody(
-      {Key key, @required this.filterSetting, @required this.setNameFilter})
+      {Key key,
+      @required this.filterSetting,
+      @required this.setNameFilter,
+      this.updateFilter})
       : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    List<String> _filterString = [];
-
+  Widget _buildFilterControl() {
+    List<Map<String, dynamic>> _filterString = [];
     if (filterSetting["name"] != "") {
-      _filterString.add('Nama "${filterSetting["name"]}"');
+      _filterString.add({
+        "text": 'Nama "${filterSetting["name"]}"',
+        "tap": () {
+          filterSetting["name"] = "";
+        }
+      });
     }
-
     if (filterSetting["category"]["id"] > -1) {
-      _filterString.add('Category "${filterSetting["category"]["name"]}"');
+      _filterString.add({
+        "text": 'Category "${filterSetting["category"]["name"]}"',
+        "tap": () {
+          filterSetting["category"]["id"] = -1;
+        }
+      });
     }
 
     if (filterSetting["star"] > 0) {
-      _filterString.add('Rating: ${filterSetting["star"]} ke atas');
+      _filterString.add({
+        "text": 'Rating: ${filterSetting["star"]} ke atas',
+        "tap": () {
+          filterSetting["star"] = 0;
+        }
+      });
     }
 
+    if (filterSetting["price"]["min"] >= 0) {
+      if (filterSetting["price"]["max"] >= 0)
+        _filterString.add({
+          "text":
+              'Harga: antara ${filterSetting["price"]["min"]} sampai ${filterSetting["price"]["max"]}',
+          "tap": () {
+            filterSetting["price"] = {"max": -1, "min": -1};
+          }
+        });
+      else
+        _filterString.add({
+          "text": 'Harga: lebih dari ${filterSetting["price"]["min"]}',
+          "tap": () {
+            filterSetting["price"] = {"max": -1, "min": -1};
+          }
+        });
+    } else {
+      if (filterSetting["price"]["max"] >= 0)
+        _filterString.add({
+          "text": 'Harga: kurang dari ${filterSetting["price"]["max"]}',
+          "tap": () {
+            filterSetting["price"] = {"max": -1, "min": -1};
+          }
+        });
+    }
+
+    return _filterString.length == 0
+        ? SliverToBoxAdapter(
+            child: Container(),
+          )
+        : SliverPersistentHeader(
+            pinned: true,
+            delegate: CustomSliverDelegate(
+                child: Container(
+                  child: ListView.separated(
+                    padding: EdgeInsets.symmetric(
+                        vertical: ScreenUtil().setWidth(5),
+                        horizontal: ScreenUtil().setWidth(5)),
+                    scrollDirection: Axis.horizontal,
+                    separatorBuilder: (context, index) {
+                      return SizedBox(
+                        width: ScreenUtil().setWidth(5),
+                      );
+                    },
+                    itemCount: _filterString.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.black54,
+                                  blurRadius: 1,
+                                  offset: Offset(1, 1))
+                            ]),
+                        child: Material(
+                          borderRadius: BorderRadius.circular(5),
+                          child: InkWell(
+                            onTap: () {
+                              _filterString[index]["tap"]();
+                              updateFilter();
+                            },
+                            splashColor: Colors.green,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: ScreenUtil().setWidth(5)),
+                              child: Center(
+                                  child: Text(
+                                _filterString[index]["text"],
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              )),
+                            ),
+                          ),
+                          color: Colors.lightGreen,
+                        ),
+                      );
+                    },
+                  ),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [BoxShadow(color: Colors.black38)]),
+                ),
+                maxHeight: ScreenUtil().setHeight(30),
+                minHeight: ScreenUtil().setHeight(30)),
+          );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: <Widget>[
         SliverPersistentHeader(
             floating: true,
-            delegate: SliverAppBarDelegate(
+            delegate: CustomSliverDelegate(
                 child: Container(
                   child: _Header(
                     setNameFilter: setNameFilter,
@@ -734,64 +741,7 @@ class _ProductPageBody extends StatelessWidget {
                 ),
                 maxHeight: ScreenUtil().setHeight(50),
                 minHeight: ScreenUtil().setHeight(50))),
-        _filterString.length == 0
-            ? SliverToBoxAdapter(
-                child: Container(),
-              )
-            : SliverPersistentHeader(
-                pinned: true,
-                delegate: SliverAppBarDelegate(
-                    child: Container(
-                      child: ListView.separated(
-                        padding: EdgeInsets.symmetric(
-                            vertical: ScreenUtil().setWidth(5),
-                            horizontal: ScreenUtil().setWidth(5)),
-                        scrollDirection: Axis.horizontal,
-                        separatorBuilder: (context, index) {
-                          return SizedBox(
-                            width: ScreenUtil().setWidth(5),
-                          );
-                        },
-                        itemCount: _filterString.length,
-                        itemBuilder: (context, index) {
-                          return Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.black54,
-                                      blurRadius: 1,
-                                      offset: Offset(1, 1))
-                                ]),
-                            child: Material(
-                              borderRadius: BorderRadius.circular(5),
-                              child: InkWell(
-                                onTap: () {},
-                                splashColor: Colors.green,
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: ScreenUtil().setWidth(5)),
-                                  child: Center(
-                                      child: Text(
-                                    _filterString[index],
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold),
-                                  )),
-                                ),
-                              ),
-                              color: Colors.lightGreen,
-                            ),
-                          );
-                        },
-                      ),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [BoxShadow(color: Colors.black38)]),
-                    ),
-                    maxHeight: ScreenUtil().setHeight(30),
-                    minHeight: ScreenUtil().setHeight(30)),
-              ),
+        _buildFilterControl(),
         SliverPadding(
           padding: const EdgeInsets.all(2.0),
           sliver: SliverGrid(
@@ -835,8 +785,8 @@ class _ProductPageState extends State<ProductPage> {
     "category": {"id": -1, "name": ""},
     "price": {
       "isActive": false,
-      "max": 1000000,
-      "min": 0,
+      "max": -1,
+      "min": -1,
     },
     "name": "",
     "star": 0
@@ -863,6 +813,7 @@ class _ProductPageState extends State<ProductPage> {
             child: new _ProductPageBody(
               filterSetting: filterSetting,
               setNameFilter: setSearchFilter,
+              updateFilter: updateFilter,
             ),
           ),
         ),
@@ -876,97 +827,77 @@ class _ProductPageState extends State<ProductPage> {
     });
   }
 
-  updateFilter(Map<String, dynamic> data) {
-    setState(() {
-      filterSetting = new Map<String, dynamic>.from(data);
-    });
+  updateFilter() {
+    setState(() {});
   }
 }
 
+class SlidingProductCard extends StatefulWidget {
+  const SlidingProductCard({Key key, this.index}) : super(key: key);
+  final int index;
+
+  @override
+  _SlidingProductCardState createState() => _SlidingProductCardState();
+}
+
 class _SlidingProductCardState extends State<SlidingProductCard> {
-  double pos = 0;
-  bool showed = true;
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-        print(context.size);
-      },
-      onHorizontalDragEnd: onDragEnd,
-      onHorizontalDragUpdate: onDragUpdate,
-      child: Container(
-        height: double.maxFinite,
-        width: double.maxFinite,
-        decoration:
-            BoxDecoration(borderRadius: BorderRadius.circular(5), boxShadow: [
-          BoxShadow(color: Colors.black38, blurRadius: 1, offset: Offset(2, 2))
-        ]),
-        child: Stack(
-          fit: StackFit.expand,
-          children: <Widget>[
-            new ProductCardControl(),
-            AnimatedPositioned(
-              duration: Duration(milliseconds: 100),
-              left: pos,
-              right: -pos,
-              child: new _ProductCard(index: widget.index),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
-
-  onDragEnd(DragEndDetails dsd) {
-    if ((showed && dsd.primaryVelocity < 0) ||
-        (!showed && dsd.primaryVelocity > 0)) {
-      return;
-    }
-    if (dsd.primaryVelocity.abs() > (1 / 3 * context.size.width)) {
-      if (showed) {
-        setState(() {
-          pos = context.size.width;
-          showed = false;
-        });
-      } else {
-        setState(() {
-          pos = 0;
-          showed = true;
-        });
-      }
-    } else {
-      if (showed) {
-        setState(() {
-          pos = 0;
-        });
-      } else {
-        setState(() {
-          pos = context.size.width;
-        });
-      }
-    }
-  }
-
-  onDragUpdate(DragUpdateDetails dud) {
-    if (dud.primaryDelta > 0 && showed) {
-      setState(() {
-        pos = math.min(pos + dud.primaryDelta, context.size.width);
-      });
-      return;
-    }
-
-    if (dud.primaryDelta < 0 && !showed) {
-      setState(() {
-        pos = math.max(pos + dud.primaryDelta, 0);
-      });
-      return;
-    }
+    return Container(
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(5),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black38, blurRadius: 1, offset: Offset(1, 1))
+            ]),
+        child: Slidable(
+          child: _ProductCard(
+            index: widget.index,
+          ),
+          actionPane: SlidableBehindActionPane(),
+          actions: widget.index % 2 != 0
+              ? <Widget>[
+                  IconSlideAction(
+                    color: Colors.orange,
+                    foregroundColor: Colors.white,
+                    icon: Icons.chat,
+                    onTap: () {},
+                  ),
+                  IconSlideAction(
+                    color: Colors.green,
+                    icon: Icons.add_shopping_cart,
+                    onTap: () {},
+                  ),
+                ]
+              : [
+                  IconSlideAction(
+                    color: Colors.deepOrange,
+                    icon: Icons.share,
+                    onTap: () {},
+                  ),
+                ],
+          secondaryActions: widget.index % 2 == 0
+              ? <Widget>[
+                  IconSlideAction(
+                    color: Colors.green,
+                    icon: Icons.add_shopping_cart,
+                    onTap: () {},
+                  ),
+                  IconSlideAction(
+                    color: Colors.orange,
+                    foregroundColor: Colors.white,
+                    icon: Icons.chat,
+                    onTap: () {},
+                  ),
+                ]
+              : [
+                  IconSlideAction(
+                    color: Colors.deepOrange,
+                    icon: Icons.share,
+                    onTap: () {},
+                  ),
+                ],
+        ));
   }
 }
