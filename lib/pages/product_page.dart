@@ -1,10 +1,18 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:pertani_shop/main.dart';
+import 'package:pertani_shop/models/product_category.dart';
 import 'package:pertani_shop/pages/product_detail_page.dart';
+import 'package:pertani_shop/utils/filter.dart';
+import 'package:pertani_shop/utils/product.dart';
+import 'package:pertani_shop/utils/product_category.dart';
 import 'package:pertani_shop/widgets/sliver_delegate.dart';
 
 class ProductPage extends StatefulWidget {
@@ -15,6 +23,9 @@ class ProductPage extends StatefulWidget {
 }
 
 class __FilterDrawerState extends State<_FilterDrawer> {
+  var productCategoryStream = getIt<ProductCategoryStream>();
+  var filterStream = getIt<FilterStream>();
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -26,13 +37,24 @@ class __FilterDrawerState extends State<_FilterDrawer> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Container(
-                  child: _buildFilterContainer(),
-                  height: 515,
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: [BoxShadow(color: Colors.black)]),
-                ),
+                StreamBuilder(
+                    stream: filterStream.filterStream,
+                    builder: (context, snapshot) {
+                      return snapshot.hasData
+                          ? Container(
+                              child:
+                                  _buildFilterContainer(filter: snapshot.data),
+                              height: 515,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  boxShadow: [BoxShadow(color: Colors.black)]),
+                            )
+                          : Container(
+                              height: 515,
+                              decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  boxShadow: [BoxShadow(color: Colors.black)]));
+                    }),
                 Container(
                   height: 100,
                   decoration: BoxDecoration(
@@ -72,33 +94,15 @@ class __FilterDrawerState extends State<_FilterDrawer> {
     );
   }
 
-  setCategoryFilter(Map<String, dynamic> cat) {
-    widget.filterSetting["category"]["id"] == cat["id"]
-        ? widget.filterSetting["category"]["id"] = -1
-        : widget.filterSetting["category"] = new Map.from(cat);
-    widget.updateFilter();
-  }
-
-  setStarFilter(int num) {
-    widget.filterSetting["star"] =
-        num == widget.filterSetting["star"] ? 0 : num;
-    widget.updateFilter();
-  }
-
-  setPriceFilter({int max = -1, int min = -1}) {
-    widget.filterSetting["price"]["max"] = max;
-    widget.filterSetting["price"]["min"] = min;
-    widget.updateFilter();
-  }
-
-  List<Widget> _buildCategoryFilterDrawer() {
-    int filtered = widget.filterSetting["category"]["id"];
+  List<Widget> _buildCategoryFilterDrawer(
+      List<ProductCategory> data, Map<String, dynamic> categoryFilter) {
+    int filtered = categoryFilter["id"];
     List<Widget> output = [];
-    for (var item in widget.filterCategory) {
-      var inlist = filtered == item["id"];
+    for (var item in data) {
+      var inlist = filtered == item.id;
       output.add(InkWell(
         onTap: () {
-          setCategoryFilter(item);
+          filterStream.setCategory(category: item);
         },
         child: AnimatedContainer(
           duration: Duration(milliseconds: 500),
@@ -112,17 +116,18 @@ class __FilterDrawerState extends State<_FilterDrawer> {
             vertical: ScreenUtil().setHeight(2),
             horizontal: ScreenUtil().setWidth(8),
           ),
-          child: Text(item["name"],
+          child: Text(item.name,
               style: TextStyle(
                   color: !inlist ? Colors.white : Colors.green,
                   fontWeight: FontWeight.w600)),
         ),
       ));
     }
+
     return output;
   }
 
-  Widget _buildFilterContainer() {
+  Widget _buildFilterContainer({Map<String, dynamic> filter}) {
     return ListView(
       children: <Widget>[
         Container(
@@ -140,13 +145,20 @@ class __FilterDrawerState extends State<_FilterDrawer> {
                       color: Colors.green,
                       fontWeight: FontWeight.w700)),
               SizedBox(height: ScreenUtil().setHeight(10)),
-              Wrap(
-                  direction: Axis.horizontal,
-                  alignment: WrapAlignment.center,
-                  verticalDirection: VerticalDirection.down,
-                  runSpacing: 3,
-                  spacing: 3,
-                  children: _buildCategoryFilterDrawer()),
+              StreamBuilder(
+                  stream: productCategoryStream.dataStream$,
+                  builder: (context, snapshot) {
+                    return snapshot.hasData
+                        ? Wrap(
+                            direction: Axis.horizontal,
+                            alignment: WrapAlignment.center,
+                            verticalDirection: VerticalDirection.down,
+                            runSpacing: 3,
+                            spacing: 3,
+                            children: _buildCategoryFilterDrawer(
+                                snapshot.data, filter["category"]))
+                        : Container();
+                  }),
               SizedBox(height: ScreenUtil().setHeight(10)),
             ],
           ),
@@ -172,7 +184,7 @@ class __FilterDrawerState extends State<_FilterDrawer> {
                 verticalDirection: VerticalDirection.down,
                 runSpacing: ScreenUtil().setWidth(10),
                 spacing: ScreenUtil().setWidth(10),
-                children: _buildStarFilter(),
+                children: _buildStarFilter(star: filter["star"]),
               ),
               SizedBox(height: ScreenUtil().setHeight(10)),
             ],
@@ -190,9 +202,9 @@ class __FilterDrawerState extends State<_FilterDrawer> {
                       fontWeight: FontWeight.w700)),
               SizedBox(height: ScreenUtil().setHeight(20)),
               _PriceRangeFilter(
-                setPriceFilter: setPriceFilter,
-                min: widget.filterSetting["price"]["min"],
-                max: widget.filterSetting["price"]["max"],
+                setPriceFilter: filterStream.setPrice,
+                min: filter["price"]["min"],
+                max: filter["price"]["max"],
               ),
               SizedBox(height: ScreenUtil().setHeight(20)),
             ],
@@ -202,8 +214,7 @@ class __FilterDrawerState extends State<_FilterDrawer> {
     );
   }
 
-  List<Widget> _buildStarFilter() {
-    int star = widget.filterSetting["star"];
+  List<Widget> _buildStarFilter({int star}) {
     List<Widget> output = [];
     for (int i = 1; i <= 5; i++) {
       List<Widget> inner = [];
@@ -216,7 +227,7 @@ class __FilterDrawerState extends State<_FilterDrawer> {
       }
       output.add(InkWell(
         onTap: () {
-          setStarFilter(i);
+          filterStream.setStar(i);
         },
         child: Container(
           padding: EdgeInsets.symmetric(
@@ -241,6 +252,7 @@ class __FilterDrawerState extends State<_FilterDrawer> {
 class __HeaderState extends State<_Header> {
   FocusNode searchFocusNode = FocusNode();
   TextEditingController _searchController = new TextEditingController();
+  var filterStream = getIt<FilterStream>();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -269,7 +281,7 @@ class __HeaderState extends State<_Header> {
                   controller: _searchController,
                   maxLines: 1,
                   onSubmitted: (value) {
-                    widget.setNameFilter(value);
+                    filterStream.setName(value);
                     setState(() {
                       _searchController.text = "";
                     });
@@ -434,13 +446,9 @@ class __PriceRangeFilterState extends State<_PriceRangeFilter> {
 class _FilterDrawer extends StatefulWidget {
   final Function updateFilter;
 
-  final List<Map<String, dynamic>> filterCategory;
-  final Map<String, dynamic> filterSetting;
   const _FilterDrawer({
     Key key,
     this.updateFilter,
-    this.filterCategory,
-    this.filterSetting,
   }) : super(key: key);
 
   @override
@@ -448,9 +456,7 @@ class _FilterDrawer extends StatefulWidget {
 }
 
 class _Header extends StatefulWidget {
-  final Function setNameFilter;
-
-  const _Header({Key key, @required this.setNameFilter}) : super(key: key);
+  const _Header({Key key}) : super(key: key);
 
   @override
   __HeaderState createState() => __HeaderState();
@@ -471,19 +477,24 @@ class _PriceRangeFilter extends StatefulWidget {
 
 class _ProductCard extends StatelessWidget {
   final int index;
-
+  final Map<String, dynamic> product;
   const _ProductCard({
     Key key,
     @required this.index,
+    this.product,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.of(context).push(CupertinoPageRoute(fullscreenDialog: true,builder: (context) {
-          return ProductDetailPage();
-        }));
+        Navigator.of(context).push(
+          CupertinoPageRoute(
+              fullscreenDialog: true,
+              builder: (context) {
+                return ProductDetailPage();
+              }),
+        );
         FocusScope.of(context).unfocus();
       },
       child: Stack(
@@ -543,7 +554,7 @@ class _ProductCard extends StatelessWidget {
                                 width: ScreenUtil().setWidth(2)),
                             borderRadius: BorderRadius.circular(5)),
                         child: Text(
-                          "Rp. 6000000",
+                          "${product["price"]}",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: ScreenUtil().setSp(13),
@@ -565,7 +576,7 @@ class _ProductCard extends StatelessWidget {
                         child: Row(
                           children: <Widget>[
                             Text(
-                              "5.0",
+                              "${product["avgRate"]}",
                               style: TextStyle(
                                   fontSize: ScreenUtil().setSp(13),
                                   color: Colors.deepOrange,
@@ -582,7 +593,7 @@ class _ProductCard extends StatelessWidget {
                     ],
                   ),
                   Text(
-                    "This is the name of productasdasdas",
+                    "${product["name"]}",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Colors.white, fontWeight: FontWeight.bold),
@@ -601,63 +612,66 @@ class _ProductPageBody extends StatelessWidget {
   final Map<String, dynamic> filterSetting;
   final Function updateFilter;
   final Function setNameFilter;
-  const _ProductPageBody(
+
+  final productStream = getIt<ProductStream>();
+  final filterStream = getIt<FilterStream>();
+  _ProductPageBody(
       {Key key,
       @required this.filterSetting,
       @required this.setNameFilter,
       this.updateFilter})
       : super(key: key);
 
-  Widget _buildFilterControl() {
+  Widget _buildFilterControl({Map<String, dynamic> filter}) {
     List<Map<String, dynamic>> _filterString = [];
-    if (filterSetting["name"] != "") {
+    if (filter["name"] != "") {
       _filterString.add({
-        "text": 'Nama "${filterSetting["name"]}"',
+        "text": 'Nama "${filter["name"]}"',
         "tap": () {
-          filterSetting["name"] = "";
+          filterStream.setName("");
         }
       });
     }
-    if (filterSetting["category"]["id"] > -1) {
+    if (filter["category"]["id"] > -1) {
       _filterString.add({
-        "text": 'Category "${filterSetting["category"]["name"]}"',
+        "text": 'Category "${filter["category"]["name"]}"',
         "tap": () {
-          filterSetting["category"]["id"] = -1;
-        }
-      });
-    }
-
-    if (filterSetting["star"] > 0) {
-      _filterString.add({
-        "text": 'Rating: ${filterSetting["star"]} ke atas',
-        "tap": () {
-          filterSetting["star"] = 0;
+          filterStream.setCategory();
         }
       });
     }
 
-    if (filterSetting["price"]["min"] >= 0) {
-      if (filterSetting["price"]["max"] >= 0)
+    if (filter["star"] > 0) {
+      _filterString.add({
+        "text": 'Rating: ${filter["star"]} ke atas',
+        "tap": () {
+          filterStream.setStar(-1);
+        }
+      });
+    }
+
+    if (filter["price"]["min"] >= 0) {
+      if (filter["price"]["max"] >= 0)
         _filterString.add({
           "text":
-              'Harga: antara ${filterSetting["price"]["min"]} sampai ${filterSetting["price"]["max"]}',
+              'Harga: antara ${filter["price"]["min"]} sampai ${filter["price"]["max"]}',
           "tap": () {
-            filterSetting["price"] = {"max": -1, "min": -1};
+            filterStream.setPrice(max: -1, min: -1);
           }
         });
       else
         _filterString.add({
-          "text": 'Harga: lebih dari ${filterSetting["price"]["min"]}',
+          "text": 'Harga: lebih dari ${filter["price"]["min"]}',
           "tap": () {
-            filterSetting["price"] = {"max": -1, "min": -1};
+            filterStream.setPrice(max: -1, min: -1);
           }
         });
     } else {
-      if (filterSetting["price"]["max"] >= 0)
+      if (filter["price"]["max"] >= 0)
         _filterString.add({
-          "text": 'Harga: kurang dari ${filterSetting["price"]["max"]}',
+          "text": 'Harga: kurang dari ${filter["price"]["max"]}',
           "tap": () {
-            filterSetting["price"] = {"max": -1, "min": -1};
+            filterStream.setPrice(max: -1, min: -1);
           }
         });
     }
@@ -733,29 +747,41 @@ class _ProductPageBody extends StatelessWidget {
             floating: true,
             delegate: CustomSliverDelegate(
                 child: Container(
-                  child: _Header(
-                    setNameFilter: setNameFilter,
-                  ),
+                  child: _Header(),
                   decoration: BoxDecoration(
                       boxShadow: [BoxShadow(color: Colors.black38)]),
                 ),
                 maxHeight: ScreenUtil().setHeight(50),
                 minHeight: ScreenUtil().setHeight(50))),
-        _buildFilterControl(),
+        StreamBuilder(
+            stream: filterStream.filterStream,
+            builder: (context, snapshot) {
+              return snapshot.hasData
+                  ? _buildFilterControl(filter: snapshot.data)
+                  : SliverToBoxAdapter(child: Container());
+            }),
         SliverPadding(
           padding: const EdgeInsets.all(2.0),
-          sliver: SliverGrid(
-            delegate: SliverChildBuilderDelegate((ctx, index) {
-              return SlidingProductCard(
-                index: index,
-              );
-            }, childCount: 100),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                childAspectRatio: 3 / 4,
-                crossAxisCount: 2,
-                crossAxisSpacing: ScreenUtil().setWidth(5),
-                mainAxisSpacing: ScreenUtil().setWidth(5)),
-          ),
+          sliver: StreamBuilder(
+              stream: productStream.stream$,
+              builder: (context, snapshot) {
+                if (snapshot.hasData)
+                  return SliverGrid(
+                    delegate: SliverChildBuilderDelegate((ctx, index) {
+                      return SlidingProductCard(
+                          index: index, product: snapshot.data[index]);
+                    }, childCount: snapshot.data.length),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        childAspectRatio: 3 / 4,
+                        crossAxisCount: 2,
+                        crossAxisSpacing: ScreenUtil().setWidth(5),
+                        mainAxisSpacing: ScreenUtil().setWidth(5)),
+                  );
+                else
+                  return SliverToBoxAdapter(
+                    child: Container(child: Text("NotLoaded")),
+                  );
+              }),
         )
       ],
     );
@@ -763,34 +789,19 @@ class _ProductPageBody extends StatelessWidget {
 }
 
 class _ProductPageState extends State<ProductPage> {
-  List<Map<String, dynamic>> filterCategory = [
-    {"id": 1, "name": "Padi", "selected": false},
-    {"id": 4, "name": "Beras", "selected": false},
-    {"id": 8, "name": "Benih Padi", "selected": false},
-    {"id": 12, "name": "Pupuk", "selected": false},
-    {"id": 13, "name": "Obat Obatan", "selected": false},
-    {"id": 14, "name": "Jagung", "selected": false},
-    {"id": 15, "name": "Pupuk", "selected": false},
-    {"id": 19, "name": "Obat Obatan", "selected": false},
-    {"id": 20, "name": "Jagung", "selected": false},
-    {"id": 22, "name": "Pupuk", "selected": false},
-    {"id": 23, "name": "Obat Obatan", "selected": false},
-    {"id": 25, "name": "Jagung", "selected": false},
-    {"id": 28, "name": "Pupuk", "selected": false},
-    {"id": 31, "name": "Obat Obatan", "selected": false},
-    {"id": 33, "name": "Jagung", "selected": false}
-  ];
+  List<Map<String, dynamic>> filterCategory = [];
+  Map<String, dynamic> filterSetting = {};
 
-  Map<String, dynamic> filterSetting = {
-    "category": {"id": -1, "name": ""},
-    "price": {
-      "isActive": false,
-      "max": -1,
-      "min": -1,
-    },
-    "name": "",
-    "star": 0
-  };
+  var productCategoryStream = getIt<ProductCategoryStream>();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    if (!productCategoryStream.isLoaded) {
+      productCategoryStream.requestCategory();
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -798,10 +809,7 @@ class _ProductPageState extends State<ProductPage> {
         ScreenUtil(width: 360, height: 640, allowFontScaling: true)
           ..init(context);
     return Scaffold(
-      endDrawer: new _FilterDrawer(
-          filterSetting: filterSetting,
-          filterCategory: filterCategory,
-          updateFilter: updateFilter),
+      endDrawer: new _FilterDrawer(updateFilter: updateFilter),
       backgroundColor: Colors.green,
       body: SafeArea(
         child: GestureDetector(
@@ -833,9 +841,10 @@ class _ProductPageState extends State<ProductPage> {
 }
 
 class SlidingProductCard extends StatefulWidget {
-  const SlidingProductCard({Key key, this.index}) : super(key: key);
+  const SlidingProductCard({Key key, this.index, this.product})
+      : super(key: key);
   final int index;
-
+  final Map<String, dynamic> product;
   @override
   _SlidingProductCardState createState() => _SlidingProductCardState();
 }
@@ -852,9 +861,7 @@ class _SlidingProductCardState extends State<SlidingProductCard> {
                   color: Colors.black38, blurRadius: 1, offset: Offset(1, 1))
             ]),
         child: Slidable(
-          child: _ProductCard(
-            index: widget.index,
-          ),
+          child: _ProductCard(index: widget.index, product: widget.product),
           actionPane: SlidableBehindActionPane(),
           actions: widget.index % 2 != 0
               ? <Widget>[

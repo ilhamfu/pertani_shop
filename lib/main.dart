@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:pertani_shop/pages/main_page.dart';
 import 'package:pertani_shop/pages/product_page.dart';
+import 'package:pertani_shop/utils/filter.dart';
+import 'package:pertani_shop/utils/product.dart';
+import 'package:pertani_shop/utils/product_category.dart';
 
-void main() => runApp(MyApp());
+GetIt getIt = new GetIt();
+
+void main() {
+  getIt.registerSingleton<ProductStream>(ProductStream());
+  getIt.registerSingleton<ProductCategoryStream>(ProductCategoryStream());
+  getIt.registerSingleton<FilterStream>(FilterStream());
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
