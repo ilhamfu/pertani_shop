@@ -22,23 +22,23 @@ class FilterSet extends FilterState {
       {ProductCategory productCategory,
       int star,
       String search,
-      Map<String, dynamic> price}) {
+      Map<String, dynamic> price,bool removeCategory=false}) {
     return FilterSet(
         search: search ?? obj.search,
         star: star ?? obj.star,
-        productCategory: productCategory ?? obj.productCategory,
-        price: price ?? obj.price);
+        productCategory: removeCategory?null:productCategory??obj.productCategory,
+        price: price??obj.price);
   }
 
   Map<String, dynamic> toMap() => {
         "search": this.search,
         "star": this.star,
-        "productCategory": this.productCategory,
+        "category": this.productCategory,
         "price": this.price
       };
 
   @override
   String toString() {
-    return "Category initialized";
+    return "State called";
   }
 }

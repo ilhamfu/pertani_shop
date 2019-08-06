@@ -5,10 +5,11 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:pertani_shop/bloc/filter/bloc_layer/index.dart';
 import 'package:pertani_shop/bloc/product_category/bloc_layer/index.dart';
 import 'package:pertani_shop/main.dart';
-import 'package:pertani_shop/models/product_category.dart';
 import 'package:pertani_shop/models/product.dart';
+import 'package:pertani_shop/models/product_category.dart';
 import 'package:pertani_shop/pages/product_detail_page.dart';
 import 'package:pertani_shop/utils/filter.dart';
 import 'package:pertani_shop/widgets/sliver_delegate.dart';
@@ -18,6 +19,15 @@ class ProductPage extends StatefulWidget {
 
   @override
   _ProductPageState createState() => _ProductPageState();
+}
+
+class SlidingProductCard extends StatefulWidget {
+  final int index;
+  final Product product;
+  const SlidingProductCard({Key key, this.index, this.product})
+      : super(key: key);
+  @override
+  _SlidingProductCardState createState() => _SlidingProductCardState();
 }
 
 class __FilterDrawerState extends State<_FilterDrawer> {
@@ -34,24 +44,22 @@ class __FilterDrawerState extends State<_FilterDrawer> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                StreamBuilder(
-                    stream: filterStream.filterStream,
-                    builder: (context, snapshot) {
-                      return snapshot.hasData
-                          ? Container(
-                              child:
-                                  _buildFilterContainer(filter: snapshot.data),
-                              height: 515,
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  boxShadow: [BoxShadow(color: Colors.black)]),
-                            )
-                          : Container(
-                              height: 515,
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  boxShadow: [BoxShadow(color: Colors.black)]));
-                    }),
+                BlocBuilder<FilterBloc, FilterState>(builder: (context, state) {
+                  if (state is FilterSet) {
+                    return Container(
+                      child: _buildFilterContainer(filter: state.toMap()),
+                      height: 515,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: [BoxShadow(color: Colors.black)]),
+                    );
+                  }
+                  return Container(
+                      height: 515,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: [BoxShadow(color: Colors.black)]));
+                }),
                 Container(
                   height: 100,
                   decoration: BoxDecoration(
@@ -91,14 +99,19 @@ class __FilterDrawerState extends State<_FilterDrawer> {
   }
 
   List<Widget> _buildCategoryFilterDrawer(
-      List<ProductCategory> data, Map<String, dynamic> categoryFilter) {
-    int filtered = categoryFilter["id"];
+      List<ProductCategory> data, ProductCategory categoryFilter) {
+    int filtered = (categoryFilter?.id) ?? -1;
     List<Widget> output = [];
     for (var item in data) {
       var inlist = filtered == item.id;
       output.add(InkWell(
         onTap: () {
-          filterStream.setCategory(category: item);
+          if (!inlist)
+            BlocProvider.of<FilterBloc>(context).dispatch(
+                UpdateCategory(category: item, removeCategory: false));
+          else
+            BlocProvider.of<FilterBloc>(context)
+                .dispatch(UpdateCategory(removeCategory: true));
         },
         child: AnimatedContainer(
           duration: Duration(milliseconds: 500),
@@ -143,7 +156,7 @@ class __FilterDrawerState extends State<_FilterDrawer> {
               SizedBox(height: ScreenUtil().setHeight(10)),
               BlocBuilder<CategoryBloc, CategoryState>(
                   builder: (context, state) {
-                if (state is CategoryInitialized){
+                if (state is CategoryInitialized) {
                   return Wrap(
                       direction: Axis.horizontal,
                       alignment: WrapAlignment.center,
@@ -151,9 +164,8 @@ class __FilterDrawerState extends State<_FilterDrawer> {
                       runSpacing: 3,
                       spacing: 3,
                       children: _buildCategoryFilterDrawer(
-                          state.category,
-                          filter["category"]));
-                }else
+                          state.category, filter["category"]));
+                } else
                   return Container();
               }),
               SizedBox(height: ScreenUtil().setHeight(10)),
@@ -199,7 +211,6 @@ class __FilterDrawerState extends State<_FilterDrawer> {
                       fontWeight: FontWeight.w700)),
               SizedBox(height: ScreenUtil().setHeight(20)),
               _PriceRangeFilter(
-                setPriceFilter: filterStream.setPrice,
                 min: filter["price"]["min"],
                 max: filter["price"]["max"],
               ),
@@ -224,7 +235,10 @@ class __FilterDrawerState extends State<_FilterDrawer> {
       }
       output.add(InkWell(
         onTap: () {
-          filterStream.setStar(i);
+          if (i != star)
+            BlocProvider.of<FilterBloc>(context).dispatch(UpdateStar(star: i));
+          else
+            BlocProvider.of<FilterBloc>(context).dispatch(UpdateStar(star: 0));
         },
         child: Container(
           padding: EdgeInsets.symmetric(
@@ -249,7 +263,6 @@ class __FilterDrawerState extends State<_FilterDrawer> {
 class __HeaderState extends State<_Header> {
   FocusNode searchFocusNode = FocusNode();
   TextEditingController _searchController = new TextEditingController();
-  var filterStream = getIt<FilterStream>();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -278,7 +291,7 @@ class __HeaderState extends State<_Header> {
                   controller: _searchController,
                   maxLines: 1,
                   onSubmitted: (value) {
-                    filterStream.setName(value);
+                    BlocProvider.of<FilterBloc>(context).dispatch(UpdateSearch(term:value));
                     setState(() {
                       _searchController.text = "";
                     });
@@ -349,16 +362,6 @@ class __HeaderState extends State<_Header> {
 class __PriceRangeFilterState extends State<_PriceRangeFilter> {
   TextEditingController minTextController, maxTextController;
   FocusNode minTextNode, maxTextNode;
-
-  _setPriceFilter() {
-    widget.setPriceFilter(
-        max: maxTextController.text != ""
-            ? int.parse(maxTextController.text)
-            : -1,
-        min: minTextController.text != ""
-            ? int.parse(minTextController.text)
-            : -1);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -436,6 +439,16 @@ class __PriceRangeFilterState extends State<_PriceRangeFilter> {
       if (!minTextNode.hasFocus) _setPriceFilter();
     });
   }
+
+  _setPriceFilter() {
+    BlocProvider.of<FilterBloc>(context).dispatch(UpdatePrice(
+        max: maxTextController.text != ""
+            ? int.parse(maxTextController.text)
+            : -1,
+        min: minTextController.text != ""
+            ? int.parse(minTextController.text)
+            : -1));
+  }
 }
 
 class _FilterDrawer extends StatefulWidget {
@@ -455,11 +468,9 @@ class _Header extends StatefulWidget {
 }
 
 class _PriceRangeFilter extends StatefulWidget {
-  final Function setPriceFilter;
   final int max, min;
   const _PriceRangeFilter({
     Key key,
-    @required this.setPriceFilter,
     @required this.max,
     @required this.min,
   }) : super(key: key);
@@ -661,33 +672,102 @@ class _ProductPageBody extends StatelessWidget {
     Key key,
   }) : super(key: key);
 
-  Widget _buildFilterControl({Map<String, dynamic> filter}) {
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      slivers: <Widget>[
+        SliverPersistentHeader(
+            floating: true,
+            delegate: CustomSliverDelegate(
+                child: Container(
+                  child: _Header(),
+                  decoration: BoxDecoration(
+                      boxShadow: [BoxShadow(color: Colors.black38)]),
+                ),
+                maxHeight: ScreenUtil().setHeight(50),
+                minHeight: ScreenUtil().setHeight(50))),
+        BlocBuilder<FilterBloc, FilterState>(
+            //buildCategory
+            builder: (context, state) {
+          if (state is FilterSet)
+            return _buildFilterControl(context: context, filter: state.toMap());
+          return SliverToBoxAdapter(child: Container());
+        }),
+        SliverPadding(
+          padding: const EdgeInsets.all(2.0),
+          sliver: StreamBuilder(
+              //buildProduct
+              stream: null,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return SliverToBoxAdapter(
+                    child: Container(
+                        child: Center(child: CircularProgressIndicator())),
+                  );
+                } else {
+                  if ((snapshot.hasData)) {
+                    return SliverGrid(
+                      delegate: SliverChildBuilderDelegate((ctx, index) {
+                        return SlidingProductCard(
+                            index: index, product: snapshot.data[index]);
+                      }, childCount: snapshot.data.length),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          childAspectRatio: 3 / 4,
+                          crossAxisCount: 2,
+                          crossAxisSpacing: ScreenUtil().setWidth(5),
+                          mainAxisSpacing: ScreenUtil().setWidth(5)),
+                    );
+                  } else {
+                    if (snapshot.hasError) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) =>
+                          Scaffold.of(context).showSnackBar(
+                              SnackBar(content: Text("Error Cuy"))));
+                    }
+                    return SliverToBoxAdapter(
+                      child: Container(
+                          child: Center(
+                              child: Text(
+                        "Tidak Ada Produk",
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ))),
+                    );
+                  }
+                }
+              }),
+        )
+      ],
+    );
+  }
+
+  Widget _buildFilterControl(
+      {BuildContext context, Map<String, dynamic> filter}) {
     List<Map<String, dynamic>> _filterString = [];
-    if (filter["name"] != "") {
+    if ((filter["search"] ?? "") != "") {
       _filterString.add({
-        "text": 'Nama "${filter["name"]}"',
+        "text": 'Nama "${filter["search"]}"',
         "tap": () {
-          // Set name in filter to empty
-          // filterStream.setName("");
+          BlocProvider.of<FilterBloc>(context).dispatch(UpdateSearch(term: ""));
         }
       });
     }
-    if (filter["category"]["id"] > -1) {
+    if ((filter["category"]?.id ?? -1) > -1) {
       _filterString.add({
-        "text": 'Category "${filter["category"]["name"]}"',
+        "text": 'Category "${filter["category"].name}"',
         "tap": () {
-          // Empty the category
-          // filterStream.setCategory();
+          BlocProvider.of<FilterBloc>(context)
+              .dispatch(UpdateCategory(removeCategory: true));
         }
       });
     }
 
-    if (filter["star"] > 0) {
+    if ((filter["star"] ?? 0) > 0) {
       _filterString.add({
         "text": 'Rating: ${filter["star"]} ke atas',
         "tap": () {
-          // Empty the star
-          // filterStream.setStar(-1);
+          BlocProvider.of<FilterBloc>(context).dispatch(UpdateStar(star: 0));
         }
       });
     }
@@ -698,8 +778,8 @@ class _ProductPageBody extends StatelessWidget {
           "text":
               'Harga: antara ${filter["price"]["min"]} sampai ${filter["price"]["max"]}',
           "tap": () {
-            // Empty The price
-            // filterStream.setPrice(max: -1, min: -1);
+            BlocProvider.of<FilterBloc>(context)
+                .dispatch(UpdatePrice(max: -1, min: -1));
           }
         });
       else
@@ -707,7 +787,8 @@ class _ProductPageBody extends StatelessWidget {
           "text": 'Harga: lebih dari ${filter["price"]["min"]}',
           "tap": () {
             // Empty max
-            // filterStream.setPrice(max: -1, min: -1);
+            BlocProvider.of<FilterBloc>(context)
+                .dispatch(UpdatePrice(max: -1, min: -1));
           }
         });
     } else {
@@ -716,7 +797,8 @@ class _ProductPageBody extends StatelessWidget {
           "text": 'Harga: kurang dari ${filter["price"]["max"]}',
           "tap": () {
             // Empty max
-            // filterStream.setPrice(max: -1, min: -1);
+            BlocProvider.of<FilterBloc>(context)
+                .dispatch(UpdatePrice(max: -1, min: -1));
           }
         });
     }
@@ -782,120 +864,42 @@ class _ProductPageBody extends StatelessWidget {
                 minHeight: ScreenUtil().setHeight(30)),
           );
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: <Widget>[
-        SliverPersistentHeader(
-            floating: true,
-            delegate: CustomSliverDelegate(
-                child: Container(
-                  child: _Header(),
-                  decoration: BoxDecoration(
-                      boxShadow: [BoxShadow(color: Colors.black38)]),
-                ),
-                maxHeight: ScreenUtil().setHeight(50),
-                minHeight: ScreenUtil().setHeight(50))),
-        StreamBuilder(
-            //buildCategory
-            stream: null,
-            builder: (context, snapshot) {
-              return snapshot.hasData
-                  ? _buildFilterControl(filter: snapshot.data)
-                  : SliverToBoxAdapter(child: Container());
-            }),
-        SliverPadding(
-          padding: const EdgeInsets.all(2.0),
-          sliver: StreamBuilder(
-              //buildProduct
-              stream: null,
-              builder: (context, snapshot) {
-                print(snapshot.connectionState);
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return SliverToBoxAdapter(
-                    child: Container(
-                        child: Center(child: CircularProgressIndicator())),
-                  );
-                } else {
-                  if ((snapshot.hasData)) {
-                    return SliverGrid(
-                      delegate: SliverChildBuilderDelegate((ctx, index) {
-                        return SlidingProductCard(
-                            index: index, product: snapshot.data[index]);
-                      }, childCount: snapshot.data.length),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          childAspectRatio: 3 / 4,
-                          crossAxisCount: 2,
-                          crossAxisSpacing: ScreenUtil().setWidth(5),
-                          mainAxisSpacing: ScreenUtil().setWidth(5)),
-                    );
-                  } else {
-                    if (snapshot.hasError) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) =>
-                          Scaffold.of(context).showSnackBar(
-                              SnackBar(content: Text("Error Cuy"))));
-                    }
-                    return SliverToBoxAdapter(
-                      child: Container(
-                          child: Center(
-                              child: Text(
-                        "Tidak Ada Produk",
-                        style: TextStyle(
-                          color: Colors.green,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ))),
-                    );
-                  }
-                }
-              }),
-        )
-      ],
-    );
-  }
 }
 
 class _ProductPageState extends State<ProductPage> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     ScreenUtil.instance =
         ScreenUtil(width: 360, height: 640, allowFontScaling: true)
           ..init(context);
     return BlocProvider(
-      builder: (ctx) => CategoryBloc()..dispatch(FetchCategory()),
-      child: Scaffold(
-        endDrawer: new _FilterDrawer(),
-        backgroundColor: Colors.green,
-        floatingActionButton: FloatingActionButton(onPressed: () {}),
-        body: SafeArea(
-          child: GestureDetector(
-            onTap: () {
-              FocusScope.of(context).unfocus();
-            },
-            child: Container(
-              color: Colors.white,
-              child: new _ProductPageBody(),
+      builder: (ctx) => FilterBloc(),
+      child: BlocProvider(
+        builder: (ctx) => CategoryBloc()..dispatch(FetchCategory()),
+        child: Scaffold(
+          endDrawer: new _FilterDrawer(),
+          backgroundColor: Colors.green,
+          floatingActionButton: FloatingActionButton(onPressed: () {}),
+          body: SafeArea(
+            child: GestureDetector(
+              onTap: () {
+                FocusScope.of(context).unfocus();
+              },
+              child: Container(
+                color: Colors.white,
+                child: new _ProductPageBody(),
+              ),
             ),
           ),
         ),
       ),
     );
   }
-}
 
-class SlidingProductCard extends StatefulWidget {
-  const SlidingProductCard({Key key, this.index, this.product})
-      : super(key: key);
-  final int index;
-  final Product product;
   @override
-  _SlidingProductCardState createState() => _SlidingProductCardState();
+  void initState() {
+    super.initState();
+  }
 }
 
 class _SlidingProductCardState extends State<SlidingProductCard> {

@@ -26,8 +26,8 @@ class UpdatePrice extends FilterEvent{
 
 class UpdateCategory extends FilterEvent{
   final ProductCategory category;
-
-  UpdateCategory({this.category}):super([category]);
+  final bool removeCategory;
+  UpdateCategory({this.removeCategory, this.category}):super([category]);
 
   @override
   String toString() {
