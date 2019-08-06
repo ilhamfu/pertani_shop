@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pertani_shop/bloc/filter/bloc_layer/index.dart';
+import 'package:pertani_shop/bloc/product/bloc_layer/index.dart';
 import 'package:pertani_shop/bloc/product_category/bloc_layer/index.dart';
 import 'package:pertani_shop/main.dart';
 import 'package:pertani_shop/models/product.dart';
@@ -291,7 +292,8 @@ class __HeaderState extends State<_Header> {
                   controller: _searchController,
                   maxLines: 1,
                   onSubmitted: (value) {
-                    BlocProvider.of<FilterBloc>(context).dispatch(UpdateSearch(term:value));
+                    BlocProvider.of<FilterBloc>(context)
+                        .dispatch(UpdateSearch(term: value));
                     setState(() {
                       _searchController.text = "";
                     });
@@ -695,47 +697,34 @@ class _ProductPageBody extends StatelessWidget {
         }),
         SliverPadding(
           padding: const EdgeInsets.all(2.0),
-          sliver: StreamBuilder(
-              //buildProduct
-              stream: null,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return SliverToBoxAdapter(
-                    child: Container(
-                        child: Center(child: CircularProgressIndicator())),
+          sliver: BlocBuilder<ProductBloc, ProductState>(
+              
+              builder: (context, state) {
+                if (state is ProductInitialized) {
+                  return SliverGrid(
+                    delegate: SliverChildBuilderDelegate((ctx, index) {
+                      return SlidingProductCard(
+                          index: index, product: state.product[index]);
+                    }, childCount: state.length),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        childAspectRatio: 3 / 4,
+                        crossAxisCount: 2,
+                        crossAxisSpacing: ScreenUtil().setWidth(5),
+                        mainAxisSpacing: ScreenUtil().setWidth(5)),
                   );
-                } else {
-                  if ((snapshot.hasData)) {
-                    return SliverGrid(
-                      delegate: SliverChildBuilderDelegate((ctx, index) {
-                        return SlidingProductCard(
-                            index: index, product: snapshot.data[index]);
-                      }, childCount: snapshot.data.length),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          childAspectRatio: 3 / 4,
-                          crossAxisCount: 2,
-                          crossAxisSpacing: ScreenUtil().setWidth(5),
-                          mainAxisSpacing: ScreenUtil().setWidth(5)),
-                    );
-                  } else {
-                    if (snapshot.hasError) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) =>
-                          Scaffold.of(context).showSnackBar(
-                              SnackBar(content: Text("Error Cuy"))));
-                    }
-                    return SliverToBoxAdapter(
-                      child: Container(
-                          child: Center(
-                              child: Text(
-                        "Tidak Ada Produk",
-                        style: TextStyle(
-                          color: Colors.green,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ))),
-                    );
-                  }
                 }
+
+                return SliverToBoxAdapter(
+                  child: Container(
+                      child: Center(
+                          child: Text(
+                    "Tidak Ada Produk",
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ))),
+                );
               }),
         )
       ],
@@ -872,23 +861,24 @@ class _ProductPageState extends State<ProductPage> {
     ScreenUtil.instance =
         ScreenUtil(width: 360, height: 640, allowFontScaling: true)
           ..init(context);
-    return BlocProvider(
-      builder: (ctx) => FilterBloc(),
-      child: BlocProvider(
-        builder: (ctx) => CategoryBloc()..dispatch(FetchCategory()),
-        child: Scaffold(
-          endDrawer: new _FilterDrawer(),
-          backgroundColor: Colors.green,
-          floatingActionButton: FloatingActionButton(onPressed: () {}),
-          body: SafeArea(
-            child: GestureDetector(
-              onTap: () {
-                FocusScope.of(context).unfocus();
-              },
-              child: Container(
-                color: Colors.white,
-                child: new _ProductPageBody(),
-              ),
+    return MultiBlocProvider(
+      providers:[
+        BlocProvider<ProductBloc>(builder: (ctx)=>ProductBloc()..dispatch(FetchAllProduct()),),
+        BlocProvider<CategoryBloc>(builder: (ctx)=>CategoryBloc()..dispatch(FetchCategory()),),
+        BlocProvider<FilterBloc>(builder: (ctx)=>FilterBloc(),)
+      ],
+      child: Scaffold(
+        endDrawer: new _FilterDrawer(),
+        backgroundColor: Colors.green,
+        floatingActionButton: FloatingActionButton(onPressed: () {}),
+        body: SafeArea(
+          child: GestureDetector(
+            onTap: () {
+              FocusScope.of(context).unfocus();
+            },
+            child: Container(
+              color: Colors.white,
+              child: new _ProductPageBody(),
             ),
           ),
         ),

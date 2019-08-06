@@ -26,12 +26,13 @@ class Product extends Equatable {
 
   factory Product.fromMap(Map<String, dynamic> map) {
     return Product(
+        id: map["id"],
         name: map["name"],
         desc: map["desc"],
         price: map["price"],
         stock: map["stock"],
         sold: map["sold"],
-        avgRate: map["avgRate"],
+        avgRate:  (map["avgRate"]).toDouble(),
         category: ProductCategory.fromMap(map["category"]),
         imageList: map["imageList"]);
   }
