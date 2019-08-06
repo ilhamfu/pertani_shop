@@ -1,18 +1,16 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:pertani_shop/bloc/product_category/bloc_layer/index.dart';
 import 'package:pertani_shop/main.dart';
 import 'package:pertani_shop/models/product_category.dart';
+import 'package:pertani_shop/models/product.dart';
 import 'package:pertani_shop/pages/product_detail_page.dart';
 import 'package:pertani_shop/utils/filter.dart';
-import 'package:pertani_shop/utils/product.dart';
-import 'package:pertani_shop/utils/product_category.dart';
 import 'package:pertani_shop/widgets/sliver_delegate.dart';
 
 class ProductPage extends StatefulWidget {
@@ -23,7 +21,6 @@ class ProductPage extends StatefulWidget {
 }
 
 class __FilterDrawerState extends State<_FilterDrawer> {
-  var productCategoryStream = getIt<ProductCategoryStream>();
   var filterStream = getIt<FilterStream>();
 
   @override
@@ -65,7 +62,6 @@ class __FilterDrawerState extends State<_FilterDrawer> {
                     children: <Widget>[
                       RaisedButton(
                         onPressed: () {
-                          widget.updateFilter();
                           Navigator.of(context).pop();
                         },
                         child: Text("Simpan Perubahan",
@@ -145,20 +141,21 @@ class __FilterDrawerState extends State<_FilterDrawer> {
                       color: Colors.green,
                       fontWeight: FontWeight.w700)),
               SizedBox(height: ScreenUtil().setHeight(10)),
-              StreamBuilder(
-                  stream: productCategoryStream.dataStream$,
-                  builder: (context, snapshot) {
-                    return snapshot.hasData
-                        ? Wrap(
-                            direction: Axis.horizontal,
-                            alignment: WrapAlignment.center,
-                            verticalDirection: VerticalDirection.down,
-                            runSpacing: 3,
-                            spacing: 3,
-                            children: _buildCategoryFilterDrawer(
-                                snapshot.data, filter["category"]))
-                        : Container();
-                  }),
+              BlocBuilder<CategoryBloc, CategoryState>(
+                  builder: (context, state) {
+                if (state is CategoryInitialized){
+                  return Wrap(
+                      direction: Axis.horizontal,
+                      alignment: WrapAlignment.center,
+                      verticalDirection: VerticalDirection.down,
+                      runSpacing: 3,
+                      spacing: 3,
+                      children: _buildCategoryFilterDrawer(
+                          state.category,
+                          filter["category"]));
+                }else
+                  return Container();
+              }),
               SizedBox(height: ScreenUtil().setHeight(10)),
             ],
           ),
@@ -416,7 +413,6 @@ class __PriceRangeFilterState extends State<_PriceRangeFilter> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     minTextController.dispose();
     maxTextController.dispose();
     maxTextNode.dispose();
@@ -426,7 +422,6 @@ class __PriceRangeFilterState extends State<_PriceRangeFilter> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     maxTextNode = new FocusNode();
     minTextNode = new FocusNode();
@@ -444,11 +439,8 @@ class __PriceRangeFilterState extends State<_PriceRangeFilter> {
 }
 
 class _FilterDrawer extends StatefulWidget {
-  final Function updateFilter;
-
   const _FilterDrawer({
     Key key,
-    this.updateFilter,
   }) : super(key: key);
 
   @override
@@ -477,7 +469,7 @@ class _PriceRangeFilter extends StatefulWidget {
 
 class _ProductCard extends StatelessWidget {
   final int index;
-  final Map<String, dynamic> product;
+  final Product product;
   const _ProductCard({
     Key key,
     @required this.index,
@@ -500,18 +492,23 @@ class _ProductCard extends StatelessWidget {
       child: Stack(
         children: <Widget>[
           ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: CachedNetworkImage(
-              fit: BoxFit.fill,
-              placeholder: (context, data) {
-                return Container(
-                  color: Colors.white,
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              },
-              imageUrl: "https://picsum.photos/id/${index % 10 + 1}/300/400",
-            ),
-          ),
+              borderRadius: BorderRadius.circular(5),
+              child: CachedNetworkImage(
+                fit: BoxFit.fill,
+                placeholder: (context, data) {
+                  return Container(
+                    color: Colors.white,
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                },
+                errorWidget: (context, title, data) {
+                  return Container(
+                    color: Colors.white,
+                  );
+                },
+                imageUrl:
+                    product.imageList.length > 0 ? product.imageList[0] : "",
+              )),
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -526,7 +523,7 @@ class _ProductCard extends StatelessWidget {
                       ],
                       stops: [
                         0.2,
-                        0.4,
+                        0.5,
                         0.9
                       ])),
             ),
@@ -554,7 +551,7 @@ class _ProductCard extends StatelessWidget {
                                 width: ScreenUtil().setWidth(2)),
                             borderRadius: BorderRadius.circular(5)),
                         child: Text(
-                          "${product["price"]}",
+                          "Rp. ${product.price}",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: ScreenUtil().setSp(13),
@@ -576,7 +573,7 @@ class _ProductCard extends StatelessWidget {
                         child: Row(
                           children: <Widget>[
                             Text(
-                              "${product["avgRate"]}",
+                              "${product.avgRate}",
                               style: TextStyle(
                                   fontSize: ScreenUtil().setSp(13),
                                   color: Colors.deepOrange,
@@ -592,11 +589,62 @@ class _ProductCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Text(
-                    "${product["name"]}",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                  Column(
+                    children: <Widget>[
+                      Text(
+                        "${product.name}",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: ScreenUtil().setSp(15)),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Column(
+                            children: <Widget>[
+                              Text(
+                                "Kategori",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: ScreenUtil().setSp(13)),
+                              ),
+                              Text(
+                                "${product.category.name}",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: ScreenUtil().setSp(13)),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            children: <Widget>[
+                              Text(
+                                "Stock",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: ScreenUtil().setSp(13)),
+                              ),
+                              Text(
+                                "${product.stock}",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: ScreenUtil().setSp(13)),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
                   )
                 ],
               ),
@@ -609,18 +657,9 @@ class _ProductCard extends StatelessWidget {
 }
 
 class _ProductPageBody extends StatelessWidget {
-  final Map<String, dynamic> filterSetting;
-  final Function updateFilter;
-  final Function setNameFilter;
-
-  final productStream = getIt<ProductStream>();
-  final filterStream = getIt<FilterStream>();
-  _ProductPageBody(
-      {Key key,
-      @required this.filterSetting,
-      @required this.setNameFilter,
-      this.updateFilter})
-      : super(key: key);
+  _ProductPageBody({
+    Key key,
+  }) : super(key: key);
 
   Widget _buildFilterControl({Map<String, dynamic> filter}) {
     List<Map<String, dynamic>> _filterString = [];
@@ -628,7 +667,8 @@ class _ProductPageBody extends StatelessWidget {
       _filterString.add({
         "text": 'Nama "${filter["name"]}"',
         "tap": () {
-          filterStream.setName("");
+          // Set name in filter to empty
+          // filterStream.setName("");
         }
       });
     }
@@ -636,7 +676,8 @@ class _ProductPageBody extends StatelessWidget {
       _filterString.add({
         "text": 'Category "${filter["category"]["name"]}"',
         "tap": () {
-          filterStream.setCategory();
+          // Empty the category
+          // filterStream.setCategory();
         }
       });
     }
@@ -645,7 +686,8 @@ class _ProductPageBody extends StatelessWidget {
       _filterString.add({
         "text": 'Rating: ${filter["star"]} ke atas',
         "tap": () {
-          filterStream.setStar(-1);
+          // Empty the star
+          // filterStream.setStar(-1);
         }
       });
     }
@@ -656,14 +698,16 @@ class _ProductPageBody extends StatelessWidget {
           "text":
               'Harga: antara ${filter["price"]["min"]} sampai ${filter["price"]["max"]}',
           "tap": () {
-            filterStream.setPrice(max: -1, min: -1);
+            // Empty The price
+            // filterStream.setPrice(max: -1, min: -1);
           }
         });
       else
         _filterString.add({
           "text": 'Harga: lebih dari ${filter["price"]["min"]}',
           "tap": () {
-            filterStream.setPrice(max: -1, min: -1);
+            // Empty max
+            // filterStream.setPrice(max: -1, min: -1);
           }
         });
     } else {
@@ -671,7 +715,8 @@ class _ProductPageBody extends StatelessWidget {
         _filterString.add({
           "text": 'Harga: kurang dari ${filter["price"]["max"]}',
           "tap": () {
-            filterStream.setPrice(max: -1, min: -1);
+            // Empty max
+            // filterStream.setPrice(max: -1, min: -1);
           }
         });
     }
@@ -710,7 +755,6 @@ class _ProductPageBody extends StatelessWidget {
                           child: InkWell(
                             onTap: () {
                               _filterString[index]["tap"]();
-                              updateFilter();
                             },
                             splashColor: Colors.green,
                             child: Padding(
@@ -754,7 +798,8 @@ class _ProductPageBody extends StatelessWidget {
                 maxHeight: ScreenUtil().setHeight(50),
                 minHeight: ScreenUtil().setHeight(50))),
         StreamBuilder(
-            stream: filterStream.filterStream,
+            //buildCategory
+            stream: null,
             builder: (context, snapshot) {
               return snapshot.hasData
                   ? _buildFilterControl(filter: snapshot.data)
@@ -763,24 +808,47 @@ class _ProductPageBody extends StatelessWidget {
         SliverPadding(
           padding: const EdgeInsets.all(2.0),
           sliver: StreamBuilder(
-              stream: productStream.stream$,
+              //buildProduct
+              stream: null,
               builder: (context, snapshot) {
-                if (snapshot.hasData)
-                  return SliverGrid(
-                    delegate: SliverChildBuilderDelegate((ctx, index) {
-                      return SlidingProductCard(
-                          index: index, product: snapshot.data[index]);
-                    }, childCount: snapshot.data.length),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        childAspectRatio: 3 / 4,
-                        crossAxisCount: 2,
-                        crossAxisSpacing: ScreenUtil().setWidth(5),
-                        mainAxisSpacing: ScreenUtil().setWidth(5)),
-                  );
-                else
+                print(snapshot.connectionState);
+                if (snapshot.connectionState == ConnectionState.waiting) {
                   return SliverToBoxAdapter(
-                    child: Container(child: Text("NotLoaded")),
+                    child: Container(
+                        child: Center(child: CircularProgressIndicator())),
                   );
+                } else {
+                  if ((snapshot.hasData)) {
+                    return SliverGrid(
+                      delegate: SliverChildBuilderDelegate((ctx, index) {
+                        return SlidingProductCard(
+                            index: index, product: snapshot.data[index]);
+                      }, childCount: snapshot.data.length),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          childAspectRatio: 3 / 4,
+                          crossAxisCount: 2,
+                          crossAxisSpacing: ScreenUtil().setWidth(5),
+                          mainAxisSpacing: ScreenUtil().setWidth(5)),
+                    );
+                  } else {
+                    if (snapshot.hasError) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) =>
+                          Scaffold.of(context).showSnackBar(
+                              SnackBar(content: Text("Error Cuy"))));
+                    }
+                    return SliverToBoxAdapter(
+                      child: Container(
+                          child: Center(
+                              child: Text(
+                        "Tidak Ada Produk",
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ))),
+                    );
+                  }
+                }
               }),
         )
       ],
@@ -789,17 +857,8 @@ class _ProductPageBody extends StatelessWidget {
 }
 
 class _ProductPageState extends State<ProductPage> {
-  List<Map<String, dynamic>> filterCategory = [];
-  Map<String, dynamic> filterSetting = {};
-
-  var productCategoryStream = getIt<ProductCategoryStream>();
-
   @override
   void initState() {
-    // TODO: implement initState
-    if (!productCategoryStream.isLoaded) {
-      productCategoryStream.requestCategory();
-    }
     super.initState();
   }
 
@@ -808,35 +867,25 @@ class _ProductPageState extends State<ProductPage> {
     ScreenUtil.instance =
         ScreenUtil(width: 360, height: 640, allowFontScaling: true)
           ..init(context);
-    return Scaffold(
-      endDrawer: new _FilterDrawer(updateFilter: updateFilter),
-      backgroundColor: Colors.green,
-      body: SafeArea(
-        child: GestureDetector(
-          onTap: () {
-            FocusScope.of(context).unfocus();
-          },
-          child: Container(
-            color: Colors.white,
-            child: new _ProductPageBody(
-              filterSetting: filterSetting,
-              setNameFilter: setSearchFilter,
-              updateFilter: updateFilter,
+    return BlocProvider(
+      builder: (ctx) => CategoryBloc()..dispatch(FetchCategory()),
+      child: Scaffold(
+        endDrawer: new _FilterDrawer(),
+        backgroundColor: Colors.green,
+        floatingActionButton: FloatingActionButton(onPressed: () {}),
+        body: SafeArea(
+          child: GestureDetector(
+            onTap: () {
+              FocusScope.of(context).unfocus();
+            },
+            child: Container(
+              color: Colors.white,
+              child: new _ProductPageBody(),
             ),
           ),
         ),
       ),
     );
-  }
-
-  setSearchFilter(String value) {
-    setState(() {
-      filterSetting["name"] = value;
-    });
-  }
-
-  updateFilter() {
-    setState(() {});
   }
 }
 
@@ -844,7 +893,7 @@ class SlidingProductCard extends StatefulWidget {
   const SlidingProductCard({Key key, this.index, this.product})
       : super(key: key);
   final int index;
-  final Map<String, dynamic> product;
+  final Product product;
   @override
   _SlidingProductCardState createState() => _SlidingProductCardState();
 }

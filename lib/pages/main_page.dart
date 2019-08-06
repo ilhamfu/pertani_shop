@@ -376,7 +376,7 @@ class _HeaderState extends State<Header> {
                           border: Border.all(color: Colors.green, width: 2)),
                       child: Icon(
                         Icons.chat,
-                        color: Colors.green,
+                        color: Colors.white,
                       ),
                     ),
                     SizedBox(
@@ -389,7 +389,7 @@ class _HeaderState extends State<Header> {
                           border: Border.all(color: Colors.green, width: 2)),
                       child: Icon(
                         Icons.notifications,
-                        color: Colors.green,
+                        color: Colors.white,
                       ),
                     ),
                   ],

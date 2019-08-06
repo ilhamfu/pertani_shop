@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:pertani_shop/pages/login_page.dart';
 import 'package:pertani_shop/pages/main_page.dart';
+import 'package:pertani_shop/pages/product_detail_page.dart';
 import 'package:pertani_shop/pages/product_page.dart';
 import 'package:pertani_shop/utils/filter.dart';
 import 'package:pertani_shop/utils/product.dart';
@@ -25,7 +27,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: ProductPage(),
+      routes: {
+        "/":(context)=>MainPage(),
+        '/product':(context)=>ProductPage(),
+        '/login':(context)=>LoginPage(),
+        '/detail':(context)=>ProductDetailPage()
+      },
+      initialRoute: "/product",
     );
   }
 }

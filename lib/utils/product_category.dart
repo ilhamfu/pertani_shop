@@ -22,7 +22,7 @@ class ProductCategoryStream {
       if (response.statusCode == 200) {
         for (var i in jsonDecode(response.body)){
           _data.add(ProductCategory.fromMap(i));
-        };
+        }
         _category.add(_data);
         _isLoaded.add(true);
       }
