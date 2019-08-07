@@ -99,10 +99,6 @@ class _ProductItem extends StatefulWidget {
 
 class __ProductItemState extends State<_ProductItem> {
   ScrollController _scrollController = new ScrollController();
-  @override
-  void initState() {
-    super.initState();
-  }
 
   void _doScroll() async {
     await _scrollController.animateTo(

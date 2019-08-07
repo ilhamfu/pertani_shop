@@ -8,11 +8,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pertani_shop/bloc/filter/bloc_layer/index.dart';
 import 'package:pertani_shop/bloc/product/bloc_layer/index.dart';
 import 'package:pertani_shop/bloc/product_category/bloc_layer/index.dart';
-import 'package:pertani_shop/main.dart';
 import 'package:pertani_shop/models/product.dart';
 import 'package:pertani_shop/models/product_category.dart';
-import 'package:pertani_shop/pages/product_detail_page.dart';
-import 'package:pertani_shop/utils/filter.dart';
 import 'package:pertani_shop/widgets/add_cart_modal.dart';
 import 'package:pertani_shop/widgets/custom_bottom.dart';
 import 'package:pertani_shop/widgets/custom_scaffold.dart';
@@ -356,7 +353,7 @@ class __HeaderState extends State<_Header> {
 
 class __PriceRangeFilterState extends State<_PriceRangeFilter> {
   TextEditingController minTextController, maxTextController;
-  FocusNode minTextNode, maxTextNode;
+  FocusNode minTextNode=FocusNode(), maxTextNode=FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -421,8 +418,6 @@ class __PriceRangeFilterState extends State<_PriceRangeFilter> {
   @override
   void initState() {
     super.initState();
-    maxTextNode = new FocusNode();
-    minTextNode = new FocusNode();
     minTextController = new TextEditingController(
         text: widget.min > -1 ? widget.min.toString() : "");
     maxTextController = new TextEditingController(
