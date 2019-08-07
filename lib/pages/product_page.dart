@@ -13,6 +13,9 @@ import 'package:pertani_shop/models/product.dart';
 import 'package:pertani_shop/models/product_category.dart';
 import 'package:pertani_shop/pages/product_detail_page.dart';
 import 'package:pertani_shop/utils/filter.dart';
+import 'package:pertani_shop/widgets/add_cart_modal.dart';
+import 'package:pertani_shop/widgets/custom_bottom.dart';
+import 'package:pertani_shop/widgets/custom_scaffold.dart';
 import 'package:pertani_shop/widgets/sliver_delegate.dart';
 
 class ProductPage extends StatefulWidget {
@@ -20,15 +23,6 @@ class ProductPage extends StatefulWidget {
 
   @override
   _ProductPageState createState() => _ProductPageState();
-}
-
-class SlidingProductCard extends StatefulWidget {
-  final int index;
-  final Product product;
-  const SlidingProductCard({Key key, this.index, this.product})
-      : super(key: key);
-  @override
-  _SlidingProductCardState createState() => _SlidingProductCardState();
 }
 
 class __FilterDrawerState extends State<_FilterDrawer> {
@@ -697,35 +691,34 @@ class _ProductPageBody extends StatelessWidget {
         }),
         SliverPadding(
           padding: const EdgeInsets.all(2.0),
-          sliver: BlocBuilder<ProductBloc, ProductState>(
-              
-              builder: (context, state) {
-                if (state is ProductInitialized) {
-                  return SliverGrid(
-                    delegate: SliverChildBuilderDelegate((ctx, index) {
-                      return SlidingProductCard(
-                          index: index, product: state.product[index]);
-                    }, childCount: state.length),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        childAspectRatio: 3 / 4,
-                        crossAxisCount: 2,
-                        crossAxisSpacing: ScreenUtil().setWidth(5),
-                        mainAxisSpacing: ScreenUtil().setWidth(5)),
-                  );
-                }
+          sliver:
+              BlocBuilder<ProductBloc, ProductState>(builder: (context, state) {
+            if (state is ProductInitialized) {
+              return SliverGrid(
+                delegate: SliverChildBuilderDelegate((ctx, index) {
+                  return _SlidingProductCard(
+                      index: index, product: state.product[index]);
+                }, childCount: state.length),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    childAspectRatio: 3 / 4,
+                    crossAxisCount: 2,
+                    crossAxisSpacing: ScreenUtil().setWidth(5),
+                    mainAxisSpacing: ScreenUtil().setWidth(5)),
+              );
+            }
 
-                return SliverToBoxAdapter(
-                  child: Container(
-                      child: Center(
-                          child: Text(
-                    "Tidak Ada Produk",
-                    style: TextStyle(
-                      color: Colors.green,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ))),
-                );
-              }),
+            return SliverToBoxAdapter(
+              child: Container(
+                  child: Center(
+                      child: Text(
+                "Tidak Ada Produk",
+                style: TextStyle(
+                  color: Colors.green,
+                  fontWeight: FontWeight.w700,
+                ),
+              ))),
+            );
+          }),
         )
       ],
     );
@@ -862,14 +855,20 @@ class _ProductPageState extends State<ProductPage> {
         ScreenUtil(width: 360, height: 640, allowFontScaling: true)
           ..init(context);
     return MultiBlocProvider(
-      providers:[
-        BlocProvider<ProductBloc>(builder: (ctx)=>ProductBloc()..dispatch(FetchAllProduct()),),
-        BlocProvider<CategoryBloc>(builder: (ctx)=>CategoryBloc()..dispatch(FetchCategory()),),
-        BlocProvider<FilterBloc>(builder: (ctx)=>FilterBloc(),)
+      providers: [
+        BlocProvider<ProductBloc>(
+          builder: (ctx) => ProductBloc()..dispatch(FetchAllProduct()),
+        ),
+        BlocProvider<CategoryBloc>(
+          builder: (ctx) => CategoryBloc()..dispatch(FetchCategory()),
+        ),
+        BlocProvider<FilterBloc>(
+          builder: (ctx) => FilterBloc(),
+        )
       ],
-      child: Scaffold(
+      child: CustomScaffold(
+        bottomNavigationBar: CustomBottomNavigationBar(currentIndex: 0),
         endDrawer: new _FilterDrawer(),
-        backgroundColor: Colors.green,
         floatingActionButton: FloatingActionButton(onPressed: () {}),
         body: SafeArea(
           child: GestureDetector(
@@ -892,7 +891,13 @@ class _ProductPageState extends State<ProductPage> {
   }
 }
 
-class _SlidingProductCardState extends State<SlidingProductCard> {
+class _SlidingProductCard extends StatelessWidget {
+  final int index;
+  final Product product;
+
+  const _SlidingProductCard({Key key, this.index, this.product})
+      : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -904,9 +909,9 @@ class _SlidingProductCardState extends State<SlidingProductCard> {
                   color: Colors.black38, blurRadius: 1, offset: Offset(1, 1))
             ]),
         child: Slidable(
-          child: _ProductCard(index: widget.index, product: widget.product),
+          child: _ProductCard(index: index, product: product),
           actionPane: SlidableBehindActionPane(),
-          actions: widget.index % 2 != 0
+          actions: index % 2 != 0
               ? <Widget>[
                   IconSlideAction(
                     color: Colors.orange,
@@ -917,7 +922,9 @@ class _SlidingProductCardState extends State<SlidingProductCard> {
                   IconSlideAction(
                     color: Colors.green,
                     icon: Icons.add_shopping_cart,
-                    onTap: () {},
+                    onTap: () {
+                      buildAddToCart(context: context, product:product);
+                    },
                   ),
                 ]
               : [
@@ -927,12 +934,14 @@ class _SlidingProductCardState extends State<SlidingProductCard> {
                     onTap: () {},
                   ),
                 ],
-          secondaryActions: widget.index % 2 == 0
+          secondaryActions: index % 2 == 0
               ? <Widget>[
                   IconSlideAction(
                     color: Colors.green,
                     icon: Icons.add_shopping_cart,
-                    onTap: () {},
+                    onTap: () {
+                      buildAddToCart(context: context, product:product);
+                    },
                   ),
                   IconSlideAction(
                     color: Colors.orange,

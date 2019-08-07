@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:pertani_shop/widgets/custom_bottom.dart';
 import 'package:pertani_shop/widgets/sliver_delegate.dart';
 
 class MainPage extends StatefulWidget {
@@ -12,13 +13,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart), title: Text("Keranjang")),
-          BottomNavigationBarItem(icon: Icon(Icons.home), title: Text("Home")),
-        ],
-      ),
+      bottomNavigationBar: CustomBottomNavigationBar(currentIndex: 1,),
       backgroundColor: Colors.green,
       body: SafeArea(
           child: GestureDetector(
@@ -381,7 +376,8 @@ class _HeaderState extends State<Header> {
                     ),
                     SizedBox(
                       width: 10,
-                    ),Container(
+                    ),
+                    Container(
                       padding: EdgeInsets.fromLTRB(3, 3, 3, 2),
                       decoration: BoxDecoration(
                           color: Colors.green,

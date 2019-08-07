@@ -14,18 +14,11 @@ class ProductApiClient {
 
   Future<List<Product>> fetchData() async {
     List<Product> list = [];
-    try {
-      final response = await httpClient.get(baseUrl);
-      final rawData = jsonDecode(response.body);
-      print("length of rawdata : ${rawData.length}");
-      for (Map<String, dynamic> i in rawData) {
-        list.add(Product.fromMap(i));
-      }
-    } catch (e) {
-      print(e);
+    final response = await httpClient.get(baseUrl);
+    final rawData = jsonDecode(response.body);
+    for (Map<String, dynamic> i in rawData) {
+      list.add(Product.fromMap(i));
     }
-
-    print(list);
     return list;
   }
 }

@@ -3,7 +3,6 @@ import 'package:bloc/bloc.dart';
 import 'package:pertani_shop/bloc/product/data_layer/repository.dart';
 
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
-
   final ProductRepository productRepository = ProductRepository();
 
   @override
@@ -12,8 +11,13 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   @override
   Stream<ProductState> mapEventToState(ProductEvent event) async* {
     if (event is FetchAllProduct) {
-      final product = await productRepository.fetchAll();
-      yield ProductInitialized(product: product);
+      try {
+        final product = await productRepository.fetchAll();
+        yield ProductInitialized(product: product);
+      } catch (e) {
+        yield ProductError(e);
+      }
     }
   }
 }
+
