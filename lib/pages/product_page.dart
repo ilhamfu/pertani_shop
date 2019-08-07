@@ -26,7 +26,6 @@ class ProductPage extends StatefulWidget {
 }
 
 class __FilterDrawerState extends State<_FilterDrawer> {
-  var filterStream = getIt<FilterStream>();
 
   @override
   Widget build(BuildContext context) {
@@ -487,34 +486,31 @@ class _ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        Navigator.of(context).push(
-          CupertinoPageRoute(
-              fullscreenDialog: true,
-              builder: (context) {
-                return ProductDetailPage();
-              }),
-        );
+        Navigator.of(context).pushNamed('/detail', arguments: product);
         FocusScope.of(context).unfocus();
       },
       child: Stack(
         children: <Widget>[
           ClipRRect(
               borderRadius: BorderRadius.circular(5),
-              child: CachedNetworkImage(
-                fit: BoxFit.fill,
-                placeholder: (context, data) {
-                  return Container(
-                    color: Colors.white,
-                    child: Center(child: CircularProgressIndicator()),
-                  );
-                },
-                errorWidget: (context, title, data) {
-                  return Container(
-                    color: Colors.white,
-                  );
-                },
-                imageUrl:
-                    product.imageList.length > 0 ? product.imageList[0] : "",
+              child: Hero(
+                tag: product.id,
+                child: CachedNetworkImage(
+                  fit: BoxFit.fill,
+                  placeholder: (context, data) {
+                    return Container(
+                      color: Colors.white,
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  },
+                  errorWidget: (context, title, data) {
+                    return Container(
+                      color: Colors.white,
+                    );
+                  },
+                  imageUrl:
+                      product.imageList.length > 0 ? product.imageList[0] : "",
+                ),
               )),
           Positioned.fill(
             child: Container(
@@ -923,7 +919,7 @@ class _SlidingProductCard extends StatelessWidget {
                     color: Colors.green,
                     icon: Icons.add_shopping_cart,
                     onTap: () {
-                      buildAddToCart(context: context, product:product);
+                      showAddToCartModal(context: context, product: product);
                     },
                   ),
                 ]
@@ -940,7 +936,7 @@ class _SlidingProductCard extends StatelessWidget {
                     color: Colors.green,
                     icon: Icons.add_shopping_cart,
                     onTap: () {
-                      buildAddToCart(context: context, product:product);
+                      showAddToCartModal(context: context, product: product);
                     },
                   ),
                   IconSlideAction(

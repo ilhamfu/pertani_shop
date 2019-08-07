@@ -12,16 +12,16 @@ class CustomBottomNavigationBar extends StatelessWidget {
       unselectedItemColor: Colors.green,
       selectedItemColor: Colors.orange,
       onTap: (index) {
-        if (index==currentIndex)
-          return;
+        if (index == currentIndex) return;
         switch (index) {
           case 0:
-            Navigator.of(context).popAndPushNamed("/product");
+            Navigator.of(context).pushNamedAndRemoveUntil("/product",ModalRoute.withName("/"));
             break;
           case 1:
-            Navigator.of(context).popAndPushNamed("/");
+            Navigator.of(context).pushNamedAndRemoveUntil("/",ModalRoute.withName("/"));
             break;
           case 2:
+            Navigator.of(context).pushNamedAndRemoveUntil("/cart",ModalRoute.withName("/"));
             break;
           case 3:
             break;

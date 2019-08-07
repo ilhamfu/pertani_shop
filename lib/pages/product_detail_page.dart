@@ -1,14 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pertani_shop/models/product.dart';
+import 'package:pertani_shop/widgets/add_cart_modal.dart';
 import 'package:pertani_shop/widgets/sliver_delegate.dart';
-
-var testString = ("Pelaksanaan kerja praktik berlangsung di SMAN 2 Tulang Bawang Tengah di Bagian Tata Usaha. Penulis juga ikut membantu dibagian operator sekolah. Dalam pelaksanaan pekerjaan di admin sekolahan kesulitan yang di hadapi adalah proses pendataan biodata yang masih di lakukan secara manual sehingga setiap kali memmbutuhan bio data selalu mengulangi proses manual tersebut. Hal itu menyebabkan lamanya proses pengumpulan data dan belum lagi sulitnya menemui yang bio datanya di butuhkan." +
-    "Oleh karena itu penulis mengusulkan sebuah sistem informasi data guru berbasis web di SMA N 2 Tulang Bawang Tengah. Dimana sistem tersebut dapat melakukan pendataan guru dan dengan di buatnya sistem informasi data guru berbasis web ini di harapkan dapat membantu guru lain untuk mendapatkan biodata guru yang di butuhkan."
-        "\nPelaksanaan kerja praktik berlangsung di SMAN 2 Tulang Bawang Tengah di Bagian Tata Usaha. Penulis juga ikut membantu dibagian operator sekolah. Dalam pelaksanaan pekerjaan di admin sekolahan kesulitan yang di hadapi adalah proses pendataan biodata yang masih di lakukan secara manual sehingga setiap kali memmbutuhan bio data selalu mengulangi proses manual tersebut. Hal itu menyebabkan lamanya proses pengumpulan data dan belum lagi sulitnya menemui yang bio datanya di butuhkan." +
-    "Oleh karena itu penulis mengusulkan sebuah sistem informasi data guru berbasis web di SMA N 2 Tulang Bawang Tengah. Dimana sistem tersebut dapat melakukan pendataan guru dan dengan di buatnya sistem informasi data guru berbasis web ini di harapkan dapat membantu guru lain untuk mendapatkan biodata guru yang di butuhkan."
-        "\nPelaksanaan kerja praktik berlangsung di SMAN 2 Tulang Bawang Tengah di Bagian Tata Usaha. Penulis juga ikut membantu dibagian operator sekolah. Dalam pelaksanaan pekerjaan di admin sekolahan kesulitan yang di hadapi adalah proses pendataan biodata yang masih di lakukan secara manual sehingga setiap kali memmbutuhan bio data selalu mengulangi proses manual tersebut. Hal itu menyebabkan lamanya proses pengumpulan data dan belum lagi sulitnya menemui yang bio datanya di butuhkan." +
-    "Oleh karena itu penulis mengusulkan sebuah sistem informasi data guru berbasis web di SMA N 2 Tulang Bawang Tengah. Dimana sistem tersebut dapat melakukan pendataan guru dan dengan di buatnya sistem informasi data guru berbasis web ini di harapkan dapat membantu guru lain untuk mendapatkan biodata guru yang di butuhkan.");
 
 class ProductDetailPage extends StatefulWidget {
   ProductDetailPage({Key key}) : super(key: key);
@@ -19,19 +14,44 @@ class ProductDetailPage extends StatefulWidget {
 class _ProductDetailPageState extends State<ProductDetailPage> {
   @override
   Widget build(BuildContext context) {
+    Product product = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       backgroundColor: Colors.green,
       body: SafeArea(
           child: Container(
         color: Colors.white,
-        child: _ProductDetailBody(),
+        child: _ProductDetailBody(product: product),
       )),
     );
   }
 }
 
-class _ProductDetailBody extends StatelessWidget {
-  const _ProductDetailBody({Key key}) : super(key: key);
+class _ProductDetailBody extends StatefulWidget {
+  const _ProductDetailBody({Key key, this.product}) : super(key: key);
+  final Product product;
+  @override
+  __ProductDetailBodyState createState() => __ProductDetailBodyState();
+}
+
+class __ProductDetailBodyState extends State<_ProductDetailBody> {
+  PageController _pageController = PageController(initialPage: 0);
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    _pageController.addListener(() {
+      setState(() {
+        _currentPage = _pageController.page.round();
+      });
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,24 +68,49 @@ class _ProductDetailBody extends StatelessWidget {
                     BoxShadow(color: Colors.black, blurRadius: 3),
                   ],
                   border: Border(
-                    bottom: BorderSide(color: Colors.green, width: 2),
+                    bottom: BorderSide(
+                        color: Colors.green, width: ScreenUtil().setWidth(2)),
                   )),
             ),
           ),
         ),
         SliverToBoxAdapter(
-          child: Container(
-            height: ScreenUtil().setHeight(200),
-            decoration: BoxDecoration(
-              color: Colors.black26,
-            ),
-            child: PageView.builder(
-              itemCount: 5,
-              itemBuilder: (context, index) {
-                return CachedNetworkImage(
-                  imageUrl: "https://picsum.photos/id/${index % 10}/300/400",
-                );
-              },
+          child: Hero(
+            tag: widget.product.id,
+            child: Container(
+              height: ScreenUtil().setHeight(360 / 4 * 3),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.black26,
+              ),
+              child: Stack(
+                alignment: AlignmentDirectional.bottomCenter,
+                children: <Widget>[
+                  PageView.builder(
+                    controller: _pageController,
+                    itemCount: widget.product.imageList.length,
+                    itemBuilder: (context, index) {
+                      return CachedNetworkImage(
+                        imageUrl: widget.product.imageList[index],
+                      );
+                    },
+                  ),
+                  Stack(
+                    alignment: AlignmentDirectional.topStart,
+                    children: <Widget>[
+                      Container(
+                        margin: EdgeInsets.only(bottom: 35),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: _buildIndicator(
+                              length: widget.product.imageList.length),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
         ),
@@ -74,14 +119,99 @@ class _ProductDetailBody extends StatelessWidget {
           delegate: CustomSliverDelegate(
               maxHeight: ScreenUtil().setHeight(40),
               minHeight: ScreenUtil().setHeight(40),
-              child: _buildHeader()),
+              child: _buildHeader(name: widget.product.name)),
+        ),
+        SliverToBoxAdapter(
+          child: Container(
+            height: ScreenUtil().setHeight(80),
+            child: Center(
+              child: Table(
+                columnWidths: {
+                  0: FixedColumnWidth(ScreenUtil().setWidth(60)),
+                  1: FixedColumnWidth(ScreenUtil().setWidth(10)),
+                  2: FixedColumnWidth(ScreenUtil().setWidth(200)),
+                },
+                children: [
+                  TableRow(children: [
+                    Text(
+                      "Harga",
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                          color: Colors.green, fontWeight: FontWeight.w700),
+                    ),
+                    Container(),
+                    Text("Rp. ${widget.product.price}",
+                        style: TextStyle(
+                            color: Colors.orange, fontWeight: FontWeight.w700)),
+                  ]),
+                  TableRow(children: [
+                    Text(
+                      "Tersedia",
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                          color: Colors.green, fontWeight: FontWeight.w700),
+                    ),
+                    Container(),
+                    Text("${widget.product.stock}",
+                        style: TextStyle(
+                            color: Colors.orange, fontWeight: FontWeight.w700)),
+                  ]),
+                  TableRow(children: [
+                    Text(
+                      "Kategori",
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                          color: Colors.green, fontWeight: FontWeight.w700),
+                    ),
+                    Container(),
+                    Text(
+                      "${widget.product.category.name}",
+                      style: TextStyle(
+                          color: Colors.orange, fontWeight: FontWeight.w700),
+                    ),
+                  ])
+                ],
+              ),
+            ),
+          ),
+        ),
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: CustomSliverDelegate(
+              maxHeight: ScreenUtil().setHeight(40),
+              minHeight: ScreenUtil().setHeight(40),
+              child: Container(
+                padding:
+                    EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(5)),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(color: Colors.black, blurRadius: 3),
+                    ],
+                    border: Border(
+                      top: BorderSide(
+                          color: Colors.green, width: ScreenUtil().setWidth(2)),
+                      bottom: BorderSide(
+                          color: Colors.green, width: ScreenUtil().setWidth(2)),
+                    )),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Deskripsi",
+                    style: TextStyle(
+                        color: Colors.orange,
+                        fontWeight: FontWeight.w700,
+                        fontSize: ScreenUtil().setSp(15)),
+                  ),
+                ),
+              )),
         ),
         SliverToBoxAdapter(
           child: Container(
             padding: EdgeInsets.all(ScreenUtil().setWidth(5)),
             constraints: BoxConstraints(minHeight: ScreenUtil().setHeight(400)),
             child: Text(
-              testString,
+              widget.product.desc,
               textAlign: TextAlign.justify,
             ),
           ),
@@ -118,7 +248,7 @@ class _ProductDetailBody extends StatelessWidget {
                     Row(
                       children: <Widget>[
                         Text(
-                          "5.0",
+                          widget.product.avgRate.toStringAsPrecision(1),
                           style: TextStyle(
                               color: Colors.orange,
                               fontWeight: FontWeight.w700,
@@ -200,7 +330,7 @@ class _ProductDetailBody extends StatelessWidget {
                         Padding(
                           padding: EdgeInsets.all(ScreenUtil().setWidth(5)),
                           child: Text(
-                            testString,
+                            "testString",
                             textAlign: TextAlign.left,
                             style: TextStyle(fontSize: ScreenUtil().setSp(15)),
                           ),
@@ -231,7 +361,9 @@ class _ProductDetailBody extends StatelessWidget {
                       child: Text(
                     "Testimoni Lain..",
                     style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w700,fontSize: ScreenUtil().setSp(17)),
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: ScreenUtil().setSp(17)),
                   )),
                 ),
               ),
@@ -240,6 +372,30 @@ class _ProductDetailBody extends StatelessWidget {
         )
       ],
     );
+  }
+
+  List<Widget> _buildIndicator({int length}) {
+    List<Widget> data = [];
+    for (int i = 0; i < length; i++) {
+      data.add(
+        AnimatedContainer(
+          duration: Duration(milliseconds: 150),
+          margin: EdgeInsets.symmetric(horizontal: 3),
+          height: ScreenUtil().setHeight(3),
+          width: ScreenUtil().setWidth(17),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: _currentPage == i ? Colors.green : Colors.white,
+              boxShadow: [
+                BoxShadow(
+                    color: _currentPage == i ? Colors.white : Colors.green,
+                    blurRadius: 1,
+                    offset: _currentPage != i ? Offset(0, 2) : Offset(0, 0))
+              ]),
+        ),
+      );
+    }
+    return data;
   }
 
   Container _buildStar({double size, Color color, double rating}) {
@@ -258,7 +414,7 @@ class _ProductDetailBody extends StatelessWidget {
     );
   }
 
-  Container _buildHeader() {
+  Container _buildHeader({@required String name}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(5)),
       decoration: BoxDecoration(
@@ -275,7 +431,7 @@ class _ProductDetailBody extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Text(
-            "NAMA PRODUCT NYA",
+            name,
             style: TextStyle(
                 color: Colors.orange,
                 fontWeight: FontWeight.w700,
@@ -316,7 +472,10 @@ class _ProductDetailBody extends StatelessWidget {
                 child: Material(
                   color: Colors.white,
                   child: InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      showAddToCartModal(
+                          context: context, product: widget.product);
+                    },
                     splashColor: Colors.orange,
                     child: Icon(
                       Icons.add_shopping_cart,
