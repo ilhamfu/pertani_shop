@@ -1,22 +1,22 @@
 import 'package:equatable/equatable.dart';
 import 'package:pertani_shop/models/product_category.dart';
 
-abstract class FilterEvent extends Equatable{
-  FilterEvent([List props = const []]):super(props);
+abstract class FilterEvent extends Equatable {
+  FilterEvent([List props = const []]) : super(props);
 }
 
-class FetchFilter extends FilterEvent{
+class FetchFilter extends FilterEvent {
   @override
   String toString() {
     return "Fetching Filter";
   }
 }
 
-class UpdatePrice extends FilterEvent{
+class UpdatePrice extends FilterEvent {
   final int max;
   final int min;
 
-  UpdatePrice({this.max=-1,this.min=-1}):super([max,min]);
+  UpdatePrice({this.max = -1, this.min = -1}) : super([max, min]);
 
   @override
   String toString() {
@@ -24,10 +24,10 @@ class UpdatePrice extends FilterEvent{
   }
 }
 
-class UpdateCategory extends FilterEvent{
+class UpdateCategory extends FilterEvent {
   final ProductCategory category;
   final bool removeCategory;
-  UpdateCategory({this.removeCategory, this.category}):super([category]);
+  UpdateCategory({this.removeCategory, this.category}) : super([category]);
 
   @override
   String toString() {
@@ -35,18 +35,25 @@ class UpdateCategory extends FilterEvent{
   }
 }
 
-class UpdateStar extends FilterEvent{
+class EmptyFilter extends FilterEvent {
+  @override
+  String toString() {
+    return "emptying filter";
+  }
+}
+
+class UpdateStar extends FilterEvent {
   final int star;
-  UpdateStar({this.star=0}):super([star]);
+  UpdateStar({this.star = 0}) : super([star]);
   @override
   String toString() {
     return "Update category filter to : $star";
   }
 }
 
-class UpdateSearch extends FilterEvent{
+class UpdateSearch extends FilterEvent {
   final String term;
-  UpdateSearch({this.term=""}):super([term]);
+  UpdateSearch({this.term = ""}) : super([term]);
 
   @override
   String toString() {

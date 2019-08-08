@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:pertani_shop/widgets/custom_bottom.dart';
+
 import 'package:pertani_shop/widgets/sliver_delegate.dart';
 
 class MainPage extends StatefulWidget {
@@ -12,51 +12,41 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: CustomBottomNavigationBar(currentIndex: 1,),
-      backgroundColor: Colors.green,
-      body: SafeArea(
-          child: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
-        child: Container(
-          color: Colors.grey.shade100,
-          child: CustomScrollView(
-            slivers: <Widget>[
-              SliverPersistentHeader(
-                pinned: true,
-                delegate: CustomSliverDelegate(
-                    child: Header(), maxHeight: 50, minHeight: 50),
+    return GestureDetector(
+        
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: CustomSliverDelegate(
+                  child: Header(), maxHeight: 50, minHeight: 50),
+            ),
+            SliverList(
+              delegate: SliverChildListDelegate([
+                _NewsCarousel(),
+              ]),
+            ),
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: CustomSliverDelegate(
+                minHeight: 40,
+                maxHeight: 40,
+                child: Container(
+                    height: 40,
+                    width: double.infinity,
+                    color: Colors.green,
+                    child: Center(
+                      child: Text("Produk Terbaik Kami",
+                          style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700)),
+                    )),
               ),
-              SliverList(
-                delegate: SliverChildListDelegate([
-                  _NewsCarousel(),
-                ]),
-              ),
-              SliverPersistentHeader(
-                pinned: true,
-                delegate: CustomSliverDelegate(
-                  minHeight: 40,
-                  maxHeight: 40,
-                  child: Container(
-                      height: 40,
-                      width: double.infinity,
-                      color: Colors.green,
-                      child: Center(
-                        child: Text("Produk Terbaik Kami",
-                            style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700)),
-                      )),
-                ),
-              ),
-              _TopProductList()
-            ],
-          ),
+            ),
+            _TopProductList()
+          ],
         ),
-      )),
     );
   }
 }

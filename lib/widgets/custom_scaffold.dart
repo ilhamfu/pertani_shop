@@ -7,25 +7,36 @@ class CustomScaffold extends StatelessWidget {
       this.bottomNavigationBar,
       this.drawer,
       this.endDrawer,
-      this.floatingActionButton})
+      this.floatingActionButton,
+      this.floatingActionButtonLocation,
+      this.floatingActionButtonAnimator})
       : super(key: key);
   final Widget body;
   final Widget bottomNavigationBar;
   final Widget drawer;
   final Widget endDrawer;
   final Widget floatingActionButton;
+  final FloatingActionButtonLocation floatingActionButtonLocation;
+  final FloatingActionButtonAnimator floatingActionButtonAnimator;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: bottomNavigationBar,
-      drawer: drawer,
-      endDrawer: endDrawer,
-      floatingActionButton: floatingActionButton,
-      backgroundColor: Colors.green,
-      body: SafeArea(
-        child: Container(
-          color: Colors.white,
-          child: body,
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        bottomNavigationBar: bottomNavigationBar,
+        drawer: drawer,
+        endDrawer: endDrawer,
+        floatingActionButton: floatingActionButton,
+        floatingActionButtonLocation: floatingActionButtonLocation,
+        floatingActionButtonAnimator: floatingActionButtonAnimator,
+        backgroundColor: Colors.green,
+        body: SafeArea(
+          child: Container(
+            color: Colors.white,
+            child: body,
+          ),
         ),
       ),
     );

@@ -5,14 +5,12 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:pertani_shop/bloc/cart/bloc_layer/index.dart';
 import 'package:pertani_shop/bloc/filter/bloc_layer/index.dart';
 import 'package:pertani_shop/bloc/product/bloc_layer/index.dart';
-import 'package:pertani_shop/bloc/product_category/bloc_layer/index.dart';
+import 'package:pertani_shop/models/cart.dart';
 import 'package:pertani_shop/models/product.dart';
-import 'package:pertani_shop/models/product_category.dart';
 import 'package:pertani_shop/widgets/add_cart_modal.dart';
-import 'package:pertani_shop/widgets/custom_bottom.dart';
-import 'package:pertani_shop/widgets/custom_scaffold.dart';
 import 'package:pertani_shop/widgets/sliver_delegate.dart';
 
 class ProductPage extends StatefulWidget {
@@ -20,235 +18,6 @@ class ProductPage extends StatefulWidget {
 
   @override
   _ProductPageState createState() => _ProductPageState();
-}
-
-class __FilterDrawerState extends State<_FilterDrawer> {
-
-  @override
-  Widget build(BuildContext context) {
-    return Drawer(
-      child: Container(
-        color: Colors.green,
-        child: SafeArea(
-          child: Container(
-            color: Colors.white,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                BlocBuilder<FilterBloc, FilterState>(builder: (context, state) {
-                  if (state is FilterSet) {
-                    return Container(
-                      child: _buildFilterContainer(filter: state.toMap()),
-                      height: 515,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [BoxShadow(color: Colors.black)]),
-                    );
-                  }
-                  return Container(
-                      height: 515,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          boxShadow: [BoxShadow(color: Colors.black)]));
-                }),
-                Container(
-                  height: 100,
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: [BoxShadow(color: Colors.black)]),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      RaisedButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text("Simpan Perubahan",
-                            style: TextStyle(
-                                fontSize: ScreenUtil().setSp(15),
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700)),
-                        color: Colors.green,
-                      ),
-                      RaisedButton(
-                          onPressed: () {},
-                          child: Text("Atur Ulang",
-                              style: TextStyle(
-                                  fontSize: ScreenUtil().setSp(15),
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w700)),
-                          color: Colors.red)
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  List<Widget> _buildCategoryFilterDrawer(
-      List<ProductCategory> data, ProductCategory categoryFilter) {
-    int filtered = (categoryFilter?.id) ?? -1;
-    List<Widget> output = [];
-    for (var item in data) {
-      var inlist = filtered == item.id;
-      output.add(InkWell(
-        onTap: () {
-          if (!inlist)
-            BlocProvider.of<FilterBloc>(context).dispatch(
-                UpdateCategory(category: item, removeCategory: false));
-          else
-            BlocProvider.of<FilterBloc>(context)
-                .dispatch(UpdateCategory(removeCategory: true));
-        },
-        child: AnimatedContainer(
-          duration: Duration(milliseconds: 500),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5),
-            border: Border.all(
-                color: Colors.green, width: ScreenUtil().setWidth(2)),
-            color: inlist ? Colors.white : Colors.green,
-          ),
-          padding: EdgeInsets.symmetric(
-            vertical: ScreenUtil().setHeight(2),
-            horizontal: ScreenUtil().setWidth(8),
-          ),
-          child: Text(item.name,
-              style: TextStyle(
-                  color: !inlist ? Colors.white : Colors.green,
-                  fontWeight: FontWeight.w600)),
-        ),
-      ));
-    }
-
-    return output;
-  }
-
-  Widget _buildFilterContainer({Map<String, dynamic> filter}) {
-    return ListView(
-      children: <Widget>[
-        Container(
-          padding: EdgeInsets.all(4),
-          width: double.maxFinite,
-          decoration: BoxDecoration(
-              color: Colors.white, boxShadow: [BoxShadow(color: Colors.black)]),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(height: ScreenUtil().setHeight(10)),
-              Text("Kategori",
-                  style: TextStyle(
-                      fontSize: ScreenUtil().setSp(15),
-                      color: Colors.green,
-                      fontWeight: FontWeight.w700)),
-              SizedBox(height: ScreenUtil().setHeight(10)),
-              BlocBuilder<CategoryBloc, CategoryState>(
-                  builder: (context, state) {
-                if (state is CategoryInitialized) {
-                  return Wrap(
-                      direction: Axis.horizontal,
-                      alignment: WrapAlignment.center,
-                      verticalDirection: VerticalDirection.down,
-                      runSpacing: 3,
-                      spacing: 3,
-                      children: _buildCategoryFilterDrawer(
-                          state.category, filter["category"]));
-                } else
-                  return Container();
-              }),
-              SizedBox(height: ScreenUtil().setHeight(10)),
-            ],
-          ),
-        ),
-        Container(
-          margin: EdgeInsets.only(bottom: 1),
-          padding: EdgeInsets.all(4),
-          width: double.maxFinite,
-          decoration: BoxDecoration(
-              color: Colors.white, boxShadow: [BoxShadow(color: Colors.black)]),
-          child: Column(
-            children: <Widget>[
-              SizedBox(height: ScreenUtil().setHeight(10)),
-              Text("Penilaian",
-                  style: TextStyle(
-                      fontSize: ScreenUtil().setSp(15),
-                      color: Colors.green,
-                      fontWeight: FontWeight.w700)),
-              SizedBox(height: ScreenUtil().setHeight(20)),
-              Wrap(
-                direction: Axis.horizontal,
-                alignment: WrapAlignment.center,
-                verticalDirection: VerticalDirection.down,
-                runSpacing: ScreenUtil().setWidth(10),
-                spacing: ScreenUtil().setWidth(10),
-                children: _buildStarFilter(star: filter["star"]),
-              ),
-              SizedBox(height: ScreenUtil().setHeight(10)),
-            ],
-          ),
-        ),
-        Container(
-          color: Colors.white,
-          child: Column(
-            children: <Widget>[
-              SizedBox(height: ScreenUtil().setHeight(20)),
-              Text("Harga",
-                  style: TextStyle(
-                      fontSize: ScreenUtil().setSp(15),
-                      color: Colors.green,
-                      fontWeight: FontWeight.w700)),
-              SizedBox(height: ScreenUtil().setHeight(20)),
-              _PriceRangeFilter(
-                min: filter["price"]["min"],
-                max: filter["price"]["max"],
-              ),
-              SizedBox(height: ScreenUtil().setHeight(20)),
-            ],
-          ),
-        )
-      ],
-    );
-  }
-
-  List<Widget> _buildStarFilter({int star}) {
-    List<Widget> output = [];
-    for (int i = 1; i <= 5; i++) {
-      List<Widget> inner = [];
-      for (int j = 1; j <= 5; j++) {
-        inner.add(Icon(
-          j <= i ? Icons.star : Icons.star_border,
-          size: ScreenUtil().setWidth(15),
-          color: i == star ? Colors.white : Colors.orange,
-        ));
-      }
-      output.add(InkWell(
-        onTap: () {
-          if (i != star)
-            BlocProvider.of<FilterBloc>(context).dispatch(UpdateStar(star: i));
-          else
-            BlocProvider.of<FilterBloc>(context).dispatch(UpdateStar(star: 0));
-        },
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            vertical: ScreenUtil().setHeight(2),
-            horizontal: ScreenUtil().setWidth(4),
-          ),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(5),
-              color: i != star ? Colors.white : Colors.orange,
-              border: Border.all(color: Colors.orange, width: 2)),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: inner,
-          ),
-        ),
-      ));
-    }
-    return output;
-  }
 }
 
 class __HeaderState extends State<_Header> {
@@ -351,121 +120,11 @@ class __HeaderState extends State<_Header> {
   }
 }
 
-class __PriceRangeFilterState extends State<_PriceRangeFilter> {
-  TextEditingController minTextController, maxTextController;
-  FocusNode minTextNode=FocusNode(), maxTextNode=FocusNode();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(10)),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-              child: TextField(
-                  onEditingComplete: () {
-                    _setPriceFilter();
-                    minTextNode.unfocus();
-                  },
-                  focusNode: minTextNode,
-                  controller: minTextController,
-                  maxLines: 1,
-                  keyboardType: TextInputType.numberWithOptions(
-                      signed: false, decimal: false),
-                  decoration: InputDecoration(
-                      hintText: "Min",
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(
-                          horizontal: ScreenUtil().setWidth(5),
-                          vertical: ScreenUtil().setHeight(10))))),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(10)),
-            color: Colors.green,
-            height: ScreenUtil().setHeight(2),
-            width: ScreenUtil().setWidth(15),
-          ),
-          Expanded(
-              child: TextField(
-                  focusNode: maxTextNode,
-                  onEditingComplete: () {
-                    _setPriceFilter();
-                    maxTextNode.unfocus();
-                  },
-                  keyboardType: TextInputType.numberWithOptions(
-                      signed: false, decimal: false),
-                  controller: maxTextController,
-                  maxLines: 1,
-                  decoration: InputDecoration(
-                      hintText: "Max",
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(
-                          horizontal: ScreenUtil().setWidth(5),
-                          vertical: ScreenUtil().setHeight(10))))),
-        ],
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    minTextController.dispose();
-    maxTextController.dispose();
-    maxTextNode.dispose();
-    minTextNode.dispose();
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    minTextController = new TextEditingController(
-        text: widget.min > -1 ? widget.min.toString() : "");
-    maxTextController = new TextEditingController(
-        text: widget.max > -1 ? widget.max.toString() : "");
-    maxTextNode.addListener(() {
-      if (!maxTextNode.hasFocus) _setPriceFilter();
-    });
-    minTextNode.addListener(() {
-      if (!minTextNode.hasFocus) _setPriceFilter();
-    });
-  }
-
-  _setPriceFilter() {
-    BlocProvider.of<FilterBloc>(context).dispatch(UpdatePrice(
-        max: maxTextController.text != ""
-            ? int.parse(maxTextController.text)
-            : -1,
-        min: minTextController.text != ""
-            ? int.parse(minTextController.text)
-            : -1));
-  }
-}
-
-class _FilterDrawer extends StatefulWidget {
-  const _FilterDrawer({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  __FilterDrawerState createState() => __FilterDrawerState();
-}
-
 class _Header extends StatefulWidget {
   const _Header({Key key}) : super(key: key);
 
   @override
   __HeaderState createState() => __HeaderState();
-}
-
-class _PriceRangeFilter extends StatefulWidget {
-  final int max, min;
-  const _PriceRangeFilter({
-    Key key,
-    @required this.max,
-    @required this.min,
-  }) : super(key: key);
-  @override
-  __PriceRangeFilterState createState() => __PriceRangeFilterState();
 }
 
 class _ProductCard extends StatelessWidget {
@@ -673,9 +332,7 @@ class _ProductPageBody extends StatelessWidget {
                 ),
                 maxHeight: ScreenUtil().setHeight(50),
                 minHeight: ScreenUtil().setHeight(50))),
-        BlocBuilder<FilterBloc, FilterState>(
-            //buildCategory
-            builder: (context, state) {
+        BlocBuilder<FilterBloc, FilterState>(builder: (context, state) {
           if (state is FilterSet)
             return _buildFilterControl(context: context, filter: state.toMap());
           return SliverToBoxAdapter(child: Container());
@@ -685,24 +342,38 @@ class _ProductPageBody extends StatelessWidget {
           sliver:
               BlocBuilder<ProductBloc, ProductState>(builder: (context, state) {
             if (state is ProductInitialized) {
-              return SliverGrid(
-                delegate: SliverChildBuilderDelegate((ctx, index) {
-                  return _SlidingProductCard(
-                      index: index, product: state.product[index]);
-                }, childCount: state.length),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    childAspectRatio: 3 / 4,
-                    crossAxisCount: 2,
-                    crossAxisSpacing: ScreenUtil().setWidth(5),
-                    mainAxisSpacing: ScreenUtil().setWidth(5)),
-              );
-            }
+              if (!state.isEmpty)
+                return SliverGrid(
+                  delegate: SliverChildBuilderDelegate((ctx, index) {
+                    return _SlidingProductCard(
+                        index: index, product: state.products[index]);
+                  }, childCount: state.length),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      childAspectRatio: 3 / 4,
+                      crossAxisCount: 2,
+                      crossAxisSpacing: ScreenUtil().setWidth(5),
+                      mainAxisSpacing: ScreenUtil().setWidth(5)),
+                );
+              else
+                return SliverToBoxAdapter(
+                  child: Container(
+                      child: Center(
+                          child: Text(
+                    "Tidak Ada Produk",
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ))),
+                );
+            } else if (state is ProductFetching)
+              return SliverToBoxAdapter(child: CircularProgressIndicator());
 
             return SliverToBoxAdapter(
               child: Container(
                   child: Center(
                       child: Text(
-                "Tidak Ada Produk",
+                "Error Saat Mengambil Produk",
                 style: TextStyle(
                   color: Colors.green,
                   fontWeight: FontWeight.w700,
@@ -842,36 +513,13 @@ class _ProductPageBody extends StatelessWidget {
 class _ProductPageState extends State<ProductPage> {
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.instance =
-        ScreenUtil(width: 360, height: 640, allowFontScaling: true)
-          ..init(context);
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<ProductBloc>(
-          builder: (ctx) => ProductBloc()..dispatch(FetchAllProduct()),
-        ),
-        BlocProvider<CategoryBloc>(
-          builder: (ctx) => CategoryBloc()..dispatch(FetchCategory()),
-        ),
-        BlocProvider<FilterBloc>(
-          builder: (ctx) => FilterBloc(),
-        )
-      ],
-      child: CustomScaffold(
-        bottomNavigationBar: CustomBottomNavigationBar(currentIndex: 0),
-        endDrawer: new _FilterDrawer(),
-        floatingActionButton: FloatingActionButton(onPressed: () {}),
-        body: SafeArea(
-          child: GestureDetector(
-            onTap: () {
-              FocusScope.of(context).unfocus();
-            },
-            child: Container(
-              color: Colors.white,
-              child: new _ProductPageBody(),
-            ),
-          ),
-        ),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Container(
+        color: Colors.white,
+        child: new _ProductPageBody(),
       ),
     );
   }
@@ -913,8 +561,23 @@ class _SlidingProductCard extends StatelessWidget {
                   IconSlideAction(
                     color: Colors.green,
                     icon: Icons.add_shopping_cart,
-                    onTap: () {
-                      showAddToCartModal(context: context, product: product);
+                    onTap: () async {
+                      var amount = await showModalBottomSheet<int>(
+                          builder: (ctx) {
+                            return AddToCartWidget(
+                              product: product,
+                            );
+                          },
+                          context: context,
+                          isScrollControlled: true,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(10))));
+                      BlocProvider.of<CartBloc>(context).dispatch(AddCart(
+                          cart: Cart(
+                              amount: amount,
+                              product: product,
+                              id: product.id)));
                     },
                   ),
                 ]
@@ -930,8 +593,25 @@ class _SlidingProductCard extends StatelessWidget {
                   IconSlideAction(
                     color: Colors.green,
                     icon: Icons.add_shopping_cart,
-                    onTap: () {
-                      showAddToCartModal(context: context, product: product);
+                    onTap: () async {
+                      var amount = await showModalBottomSheet<int>(
+                              builder: (ctx) {
+                                return AddToCartWidget(
+                                  product: product,
+                                );
+                              },
+                              context: context,
+                              isScrollControlled: true,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                      top: Radius.circular(10)))) ??
+                          0;
+                      if (amount > 0)
+                        BlocProvider.of<CartBloc>(context).dispatch(AddCart(
+                            cart: Cart(
+                                amount: amount,
+                                product: product,
+                                id: product.id)));
                     },
                   ),
                   IconSlideAction(

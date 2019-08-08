@@ -3,28 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pertani_shop/models/product.dart';
 
-showAddToCartModal({@required BuildContext context, @required Product product}) {
-  showModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
-      builder: (ctx) => _AddToCartWidget(
-            product: product,
-          ),
-      isScrollControlled: true);
-}
 
-class _AddToCartWidget extends StatefulWidget {
-  _AddToCartWidget({Key key, this.product}) : super(key: key);
+
+class AddToCartWidget extends StatefulWidget {
+  AddToCartWidget({Key key, this.product, this.amount=1}) : super(key: key);
 
   final Product product;
+  final int amount;
 
   _AddToCartWidgetState createState() => _AddToCartWidgetState();
 }
 
-class _AddToCartWidgetState extends State<_AddToCartWidget> {
+class _AddToCartWidgetState extends State<AddToCartWidget> {
   TextEditingController _textEditingController = new TextEditingController();
-  int _amount = 1;
+  int _amount;
   @override
   void dispose() {
     _textEditingController.dispose();
@@ -34,6 +26,7 @@ class _AddToCartWidgetState extends State<_AddToCartWidget> {
   @override
   void initState() {
     super.initState();
+    _amount = widget.amount;
     _textEditingController.text = _amount.toString();
   }
 
@@ -103,9 +96,9 @@ class _AddToCartWidgetState extends State<_AddToCartWidget> {
                       borderRadius: BorderRadius.circular(10),
                       boxShadow: [
                         BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 2,
-                            offset: Offset(2, 2))
+                            color: Colors.lightGreen,
+                            blurRadius: 0,
+                            offset: Offset(-3, -3))
                       ]),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
@@ -182,7 +175,8 @@ class _AddToCartWidgetState extends State<_AddToCartWidget> {
                                               fontWeight: FontWeight.bold,
                                               fontSize:
                                                   ScreenUtil().setSp(15))),
-                                      Text("Rp. ${_amount*widget.product.price}",
+                                      Text(
+                                          "Rp. ${_amount * widget.product.price}",
                                           style: TextStyle(
                                               color: Colors.green,
                                               fontWeight: FontWeight.bold,
@@ -211,7 +205,7 @@ class _AddToCartWidgetState extends State<_AddToCartWidget> {
                     child: Material(
                       color: Colors.red,
                       child: InkWell(
-                        onTap: () {},
+                        onTap: () {Navigator.of(context).pop(0);},
                         child: Center(
                           child: Text(
                             "Batal",
@@ -226,9 +220,13 @@ class _AddToCartWidgetState extends State<_AddToCartWidget> {
                     width: ScreenUtil().setWidth(180),
                     height: ScreenUtil().setHeight(50),
                     child: Material(
-                      color: _amount>=1?Colors.green:Colors.grey,
+                      color: _amount >= 1 ? Colors.green : Colors.grey,
                       child: InkWell(
-                        onTap: _amount>=1? () {}:null,
+                        onTap: _amount >= 1
+                            ? () {
+                                Navigator.of(context).pop(_amount);
+                              }
+                            : null,
                         child: Center(
                           child: Text(
                             "Simpan",
@@ -255,11 +253,11 @@ class _AddToCartWidgetState extends State<_AddToCartWidget> {
           width: ScreenUtil().setWidth(30),
           child: Material(
             borderRadius: BorderRadius.horizontal(left: Radius.circular(5)),
-            color: _amount>1?Colors.orange:Colors.grey,
+            color: _amount > 1 ? Colors.orange : Colors.grey,
             child: InkWell(
               splashColor: Colors.white,
               borderRadius: BorderRadius.horizontal(left: Radius.circular(5)),
-              onTap: _amount>1? _decrement:null,
+              onTap: _amount > 1 ? _decrement : null,
               child: Icon(
                 Icons.remove,
                 color: Colors.white,
@@ -284,11 +282,11 @@ class _AddToCartWidgetState extends State<_AddToCartWidget> {
           width: ScreenUtil().setWidth(30),
           child: Material(
             borderRadius: BorderRadius.horizontal(right: Radius.circular(5)),
-            color: _amount<widget.product.stock?Colors.orange:Colors.grey,
+            color: _amount < widget.product.stock ? Colors.orange : Colors.grey,
             child: InkWell(
               splashColor: Colors.white,
               borderRadius: BorderRadius.horizontal(right: Radius.circular(5)),
-              onTap: _amount<widget.product.stock? _increment:null,
+              onTap: _amount < widget.product.stock ? _increment : null,
               child: Icon(
                 Icons.add,
                 color: Colors.white,

@@ -12,9 +12,11 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
   Stream<ProductState> mapEventToState(ProductEvent event) async* {
     if (event is FetchAllProduct) {
       try {
-        final product = await productRepository.fetchAll();
-        yield ProductInitialized(product: product);
+        yield ProductFetching();
+        final products = await productRepository.fetchAll();
+        yield ProductInitialized(products: products);
       } catch (e) {
+        print(e);
         yield ProductError(e);
       }
     }

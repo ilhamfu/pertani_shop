@@ -13,12 +13,14 @@ class ProductApiClient {
       : this.httpClient = httpClient ?? Client();
 
   Future<List<Product>> fetchData() async {
-    List<Product> list = [];
+  
     final response = await httpClient.get(baseUrl);
     final rawData = jsonDecode(response.body);
-    for (Map<String, dynamic> i in rawData) {
-      list.add(Product.fromMap(i));
+
+    if (response.statusCode!=200){
+      throw ClientException("Error",Uri.parse(baseUrl));
     }
-    return list;
+    return 
+     rawData.map<Product>((data)=>new Product.fromMap(data)).toList();
   }
 }

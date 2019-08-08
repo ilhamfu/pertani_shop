@@ -20,5 +20,8 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
     if (event is UpdateSearch){
       yield FilterSet.copyFrom(currentState,search: event.term);
     }
+    if (event is EmptyFilter){
+      yield FilterSet();
+    }
   }
 }

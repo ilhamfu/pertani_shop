@@ -10,10 +10,8 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
 
   @override
   Stream<CategoryState> mapEventToState(CategoryEvent event) async* {
-    if (event is FetchCategory) {
-      print("event dispatched");
+    if ((event is FetchCategory)&&(currentState is CategoryUninitialized)) {
       final category = await categoryRepository.fetch();
-      print("fetch fiished");
       yield CategoryInitialized(category: category);
     }
   }

@@ -14,11 +14,18 @@ class ProductUninitalized extends ProductState {
 }
 
 class ProductInitialized extends ProductState {
-  final List<Product> product;
+  final List<Product> products;
 
-  int get length => product.length;
-
-  ProductInitialized({this.product}) : super([product]);
+  int get length => products.length;
+  bool get isEmpty => products.length<=0;
+  ProductInitialized({this.products}) : super([products]);
+}
+class ProductFetching extends ProductState{
+  @override
+  String toString() {
+    // TODO: implement toString
+    return "Product Fetching";
+  }
 }
 
 class ProductError extends ProductState {

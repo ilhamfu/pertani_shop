@@ -473,8 +473,17 @@ class __ProductDetailBodyState extends State<_ProductDetailBody> {
                   color: Colors.white,
                   child: InkWell(
                     onTap: () {
-                      showAddToCartModal(
-                          context: context, product: widget.product);
+                      showModalBottomSheet(
+                          builder: (ctx) {
+                            return AddToCartWidget(
+                              product: widget.product,
+                            );
+                          },
+                          context: context,
+                          isScrollControlled: true,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(10))));
                     },
                     splashColor: Colors.orange,
                     child: Icon(
