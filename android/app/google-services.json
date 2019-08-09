@@ -1,0 +1,44 @@
+{
+  "project_info": {
+    "project_number": "234073316735",
+    "firebase_url": "https://pertani-shop.firebaseio.com",
+    "project_id": "pertani-shop",
+    "storage_bucket": "pertani-shop.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:234073316735:android:5525250a52b79542",
+        "android_client_info": {
+          "package_name": "partani.app.pertani_shop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "234073316735-5sr8ujopoq7ajecsnou3vtbc7rcsu33v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "partani.app.pertani_shop",
+            "certificate_hash": "80e1388145ffc3b463a76f56edf2a94c047fd533"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBnZhZw8hCJ0kilekMiQlqrzjQONSm62VY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "234073316735-6vo2m6r5b2d7mlipavhj9n30f4l7k4b0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

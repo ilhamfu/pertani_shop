@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:http/http.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -49,9 +50,14 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-class _LoginPageBody extends StatelessWidget {
+class _LoginPageBody extends StatefulWidget {
   const _LoginPageBody({Key key}) : super(key: key);
 
+  @override
+  __LoginPageBodyState createState() => __LoginPageBodyState();
+}
+
+class __LoginPageBodyState extends State<_LoginPageBody> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -109,11 +115,12 @@ class _LoginPageBody extends StatelessWidget {
                 Container(
                   width: ScreenUtil().setWidth(280),
                   height: ScreenUtil().setHeight(40),
-                  decoration:
-                      BoxDecoration(borderRadius: BorderRadius.circular(5)),
+                  decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.circular(5)),
                   child: Material(
+                    color: Colors.transparent,
                     borderRadius: BorderRadius.circular(5),
-                    color: Colors.green,
                     child: InkWell(
                       onTap: () {},
                       borderRadius: BorderRadius.circular(5),
