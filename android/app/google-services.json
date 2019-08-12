@@ -8,17 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:234073316735:android:5525250a52b79542",
+        "mobilesdk_app_id": "1:234073316735:android:f267010dd81a4206",
         "android_client_info": {
-          "package_name": "partani.app.pertani_shop"
+          "package_name": "pertani.app.pertani_shop"
         }
       },
       "oauth_client": [
         {
-          "client_id": "234073316735-5sr8ujopoq7ajecsnou3vtbc7rcsu33v.apps.googleusercontent.com",
+          "client_id": "234073316735-t48hpot4871i1lqmibq320dfvqm4t9g0.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "partani.app.pertani_shop",
+            "package_name": "pertani.app.pertani_shop",
             "certificate_hash": "80e1388145ffc3b463a76f56edf2a94c047fd533"
           }
         }

@@ -47,13 +47,25 @@ class FirebaseAuthClient {
       throw CodedException(code: CodedException.GOOGLE_AUTH_ERROR);
     }
   }
-  Future<FirebaseUser> emailSignIn({@required String email,@required String password}) async{
-    try{
-      FirebaseUser user =await _firebaseAuth.signInWithEmailAndPassword(email: email,password: password);
+
+  Future<FirebaseUser> emailSignIn(
+      {@required String email, @required String password}) async {
+    try {
+      FirebaseUser user = await _firebaseAuth.signInWithEmailAndPassword(
+          email: email, password: password);
       return user;
-    }catch (e){
+    } catch (e) {
       print(e);
       throw CodedException(code: CodedException.EMAIL_AUTH_ERROR);
+    }
+  }
+
+  Future<bool> logOut() async {
+    try {
+      await _firebaseAuth.signOut();
+      return true;
+    } catch (e) {
+      throw CodedException(code: CodedException.LOGOUT_AUTH_ERROR);
     }
   }
 }

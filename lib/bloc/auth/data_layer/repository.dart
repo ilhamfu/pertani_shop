@@ -10,4 +10,5 @@ class AuthRepository{
   Future<FirebaseUser> emailSignIn({@required String email,@required String password}) => _fireBaseAuthClient.emailSignIn(email: email,password: password);
   Future<FirebaseUser> facebookSignIn() => _fireBaseAuthClient.facebookSignIn();
   Future<FirebaseUser> googleSignIn() => _fireBaseAuthClient.googleSignIn();
+  Future<bool> logOut()=>_fireBaseAuthClient.logOut();
 }

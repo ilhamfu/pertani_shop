@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pertani_shop/models/user.dart';
 
 abstract class AuthState extends Equatable {
@@ -30,12 +31,12 @@ class AuthError extends AuthState {
   }
 }
 
-class AuthAuthorized extends AuthState {
-  final User user;
+class AuthLoggedIn extends AuthState {
+  final FirebaseUser user;
 
-  AuthAuthorized(this.user) : super([user]);
+  AuthLoggedIn(this.user) : super([user]);
   @override
   String toString() {
-    return "Logged in : ${user.fullName}";
+    return "Logged in : ${user.displayName}";
   }
 }

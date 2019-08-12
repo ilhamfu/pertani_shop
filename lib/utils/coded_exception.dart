@@ -7,6 +7,7 @@ class CodedException implements Exception {
   static const int FACEBOOK_AUTH_CANCELED = 2;
   static const int GOOGLE_AUTH_ERROR = 3;
   static const int EMAIL_AUTH_ERROR = 4;
+  static const int LOGOUT_AUTH_ERROR = 5;
 
   static const String FACEBOOK_AUTH_ERROR_MESSAGE =
       "Facebook authentication error";
@@ -14,6 +15,8 @@ class CodedException implements Exception {
       "Facebook authentication canceled by user";
   static const String GOOGLE_AUTH_ERROR_MESSAGE = "Google authentication error";
   static const String EMAIL_AUTH_ERROR_MESSAGE = "Email authentication error";
+  static const String LOGOUT_AUTH_ERROR_MESSAGE =
+      "Log Out authentication error";
   static const String DEFAULT_MESSAGE = "Unknown Code";
 
   String errorMessage() {
@@ -26,6 +29,9 @@ class CodedException implements Exception {
         break;
       case GOOGLE_AUTH_ERROR:
         return GOOGLE_AUTH_ERROR_MESSAGE;
+        break;
+      case LOGOUT_AUTH_ERROR:
+        return LOGOUT_AUTH_ERROR_MESSAGE;
         break;
       case EMAIL_AUTH_ERROR:
         return EMAIL_AUTH_ERROR_MESSAGE;

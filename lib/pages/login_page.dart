@@ -1,7 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart';
+
+import '../bloc/auth/bloc_layer/index.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -19,12 +22,32 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: Colors.green,
       body: SafeArea(
         child: Container(
-          child: _LoginPageBody(),
+          child: BlocProvider<AuthBloc>(
+            builder: (ctx)=>AuthBloc(),
+            child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+              return state is AuthLoggingIn?Container(child: Text("Logging In"),):state is AuthError
+                  ? Container(
+                      child: Text("Error"),
+                    )
+                  : state is AuthUnauthorized
+                      ? _LoginPageBody()
+                      : Container(
+                          child: Column(
+                            children: <Widget>[
+                              Text((state as AuthLoggedIn).user.displayName),
+                              RaisedButton(child: Text("Log out"),onPressed: (){
+                                BlocProvider.of<AuthBloc>(context).dispatch(AuthLogOut());
+                              },)
+                            ],
+                          ),
+                        );
+            }),
+          ),
           decoration: BoxDecoration(
             gradient: LinearGradient(colors: [
               Colors.orange,
               Colors.green,
-              Colors.white,
+              Colors.white, 
               Colors.green,
               Colors.orange,
               Colors.white,
@@ -122,7 +145,9 @@ class __LoginPageBodyState extends State<_LoginPageBody> {
                     color: Colors.transparent,
                     borderRadius: BorderRadius.circular(5),
                     child: InkWell(
-                      onTap: () {},
+                      onTap: () {
+                        BlocProvider.of<AuthBloc>(context).dispatch(AuthLogInGoogle());
+                      },
                       borderRadius: BorderRadius.circular(5),
                       child: Center(
                           child: Text(
