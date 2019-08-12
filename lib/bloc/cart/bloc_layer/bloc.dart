@@ -2,21 +2,22 @@ import 'package:pertani_shop/bloc/cart/bloc_layer/index.dart';
 import 'package:bloc/bloc.dart';
 import 'package:pertani_shop/models/cart.dart';
 
-class CartBloc extends Bloc<CartEvent, CartStates> {
+class CartBloc extends Bloc<CartEvent, CartState> {
   @override
-  CartStates get initialState => CartUninitialized();
+  CartState get initialState => CartUninitialized();
 
   @override
-  Stream<CartStates> mapEventToState(CartEvent event) async* {
+  Stream<CartState> mapEventToState(CartEvent event) async* {
     try {
       if (event is FetchCart) {
-        print("fetching cart");
-        yield CartFetching();
-        await Future.delayed(Duration(seconds: 5));
-        yield CartInitialized(carts: []);
-        return;
+        if ((currentState is CartUninitialized) || !event.initialFetch) {
+          yield CartOnProcess(processCode: CartOnProcess.ON_FETCHING);
+          await Future.delayed(Duration(seconds: 5));
+          yield CartInitialized(carts: []);
+          return;
+        }
       }
-      if (event is AddCart) {
+      if (event is CartCreate) {
         if (currentState is CartInitialized) {
           var cart = (currentState as CartInitialized).carts;
           var pos = cart.indexOf(event.cart);
@@ -25,7 +26,7 @@ class CartBloc extends Bloc<CartEvent, CartStates> {
                 carts: List<Cart>.from(cart)..add(event.cart));
           else {
             Cart oldCart = cart[pos];
-            
+
             yield CartInitialized(
                 carts: List<Cart>.from(cart)
                   ..removeAt(pos)
@@ -37,7 +38,8 @@ class CartBloc extends Bloc<CartEvent, CartStates> {
         }
         return;
       }
-      if (event is ToggleCart) {
+
+      if (event is CartToggle) {
         if (currentState is CartInitialized) {
           var cart = (currentState as CartInitialized).carts;
           var pos = cart.indexOf(event.cart);
@@ -50,7 +52,7 @@ class CartBloc extends Bloc<CartEvent, CartStates> {
         }
         return;
       }
-      if (event is UpdateAmountCart) {
+      if (event is CartUpdateAmount) {
         if (currentState is CartInitialized) {
           var cart = (currentState as CartInitialized).carts;
           var pos = cart.indexOf(event.cart);
@@ -62,8 +64,18 @@ class CartBloc extends Bloc<CartEvent, CartStates> {
         }
         return;
       }
+
+      if (event is CartDelete) {
+        if (currentState is CartInitialized) {
+          var cart = (currentState as CartInitialized).carts;
+          var pos = cart.indexOf(event.cart);
+          if (pos < 0) return;
+          yield CartInitialized(carts: List<Cart>.from(cart)..removeAt(pos));
+        }
+        return;
+      }
     } catch (e) {
-      print(e);
+      yield CartError(error: e);
     }
   }
 }

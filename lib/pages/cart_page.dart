@@ -19,9 +19,10 @@ class _CartPageState extends State<CartPage> {
       color: Colors.white,
       child: Column(
         children: <Widget>[
-          Expanded(child: BlocBuilder<CartBloc, CartStates>(
+          Expanded(child: BlocBuilder<CartBloc, CartState>(
             builder: (ctx, state) {
-              if (state is CartFetching) {
+              if ((state is CartOnProcess) &&
+                  (state.processCode == CartOnProcess.ON_FETCHING)) {
                 return CircularProgressIndicator();
               } else if (state is CartInitialized) {
                 if (state.isEmpty)
@@ -30,7 +31,12 @@ class _CartPageState extends State<CartPage> {
                   return ListView.builder(
                     itemCount: state.length,
                     itemBuilder: (ctx, index) {
-                      return CartItem(cart: state.carts[index]);
+                      return Dismissible(
+                          key: Key("Key $index"),
+                          onDismissed: (direction){
+                            BlocProvider.of<CartBloc>(context).dispatch(CartDelete(cart: state.carts[index]));
+                          },
+                          child: CartItem(cart: state.carts[index]));
                     },
                   );
               } else
@@ -69,7 +75,7 @@ class _CartPageState extends State<CartPage> {
                                 fontWeight: FontWeight.w700,
                                 fontSize: ScreenUtil().setSp(16)),
                           ),
-                          BlocBuilder<CartBloc, CartStates>(
+                          BlocBuilder<CartBloc, CartState>(
                             builder: (ctx, state) => Text(
                               (state is CartInitialized)
                                   ? "Rp. ${state.total}"
@@ -135,7 +141,7 @@ class CartItem extends StatelessWidget {
               child: InkWell(
                 onTap: () {
                   BlocProvider.of<CartBloc>(context)
-                      .dispatch(ToggleCart(cart: cart));
+                      .dispatch(CartToggle(cart: cart));
                 },
               ),
             ),
@@ -155,7 +161,8 @@ class CartItem extends StatelessWidget {
                             )) ??
                     0;
                 if (amount > 0) {
-                  BlocProvider.of<CartBloc>(context).dispatch(UpdateAmountCart(amount: amount,cart: cart));
+                  BlocProvider.of<CartBloc>(context)
+                      .dispatch(CartUpdateAmount(amount: amount, cart: cart));
                 }
                 // BlocProvider.of<CartBloc>(context).dispatch(AddCart());
               },

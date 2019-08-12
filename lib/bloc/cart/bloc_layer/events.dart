@@ -6,16 +6,30 @@ abstract class CartEvent extends Equatable {
 }
 
 class FetchCart extends CartEvent {
+  final bool initialFetch;
+
+  FetchCart({this.initialFetch = true}) : super([initialFetch]);
   @override
   String toString() {
     return "Fetching cart";
   }
 }
 
-class UpdateAmountCart extends CartEvent {
+class CartDelete extends CartEvent {
+  final Cart cart;
+
+  CartDelete({this.cart}) : super([cart]);
+
+  @override
+  String toString() {
+    return "Deleting cart : ${cart.id}";
+  }
+}
+
+class CartUpdateAmount extends CartEvent {
   final Cart cart;
   final int amount;
-  UpdateAmountCart({this.amount, this.cart}) : super([cart,amount]);
+  CartUpdateAmount({this.amount, this.cart}) : super([cart, amount]);
 
   @override
   String toString() {
@@ -23,21 +37,10 @@ class UpdateAmountCart extends CartEvent {
   }
 }
 
-class DismissCart extends CartEvent {
-  final Cart cart;
-
-  DismissCart({this.cart}) : super([cart]);
-
-  @override
-  String toString() {
-    return "Dismising cart : ${cart.id}";
-  }
-}
-
-class AddCart extends CartEvent {
+class CartCreate extends CartEvent {
   final Cart cart;
   final int amount;
-  AddCart({this.amount, this.cart}) : super([cart,amount]);
+  CartCreate({this.amount, this.cart}) : super([cart, amount]);
 
   @override
   String toString() {
@@ -45,10 +48,9 @@ class AddCart extends CartEvent {
   }
 }
 
-class ToggleCart extends CartEvent {
+class CartToggle extends CartEvent {
   final Cart cart;
-  ToggleCart({this.cart}):
-        super([cart]);
+  CartToggle({this.cart}) : super([cart]);
 
   @override
   String toString() {

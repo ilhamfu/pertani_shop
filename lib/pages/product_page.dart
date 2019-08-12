@@ -573,7 +573,7 @@ class _SlidingProductCard extends StatelessWidget {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.vertical(
                                   top: Radius.circular(10))));
-                      BlocProvider.of<CartBloc>(context).dispatch(AddCart(
+                      BlocProvider.of<CartBloc>(context).dispatch(CartCreate(
                           cart: Cart(
                               amount: amount,
                               product: product,
@@ -607,7 +607,7 @@ class _SlidingProductCard extends StatelessWidget {
                                       top: Radius.circular(10)))) ??
                           0;
                       if (amount > 0)
-                        BlocProvider.of<CartBloc>(context).dispatch(AddCart(
+                        BlocProvider.of<CartBloc>(context).dispatch(CartCreate(
                             cart: Cart(
                                 amount: amount,
                                 product: product,

@@ -1,23 +1,34 @@
 import 'package:equatable/equatable.dart';
 import 'package:pertani_shop/models/cart.dart';
 
-abstract class CartStates extends Equatable {
-  CartStates([List props = const []]) : super(props);
+abstract class CartState extends Equatable {
+  CartState([List props = const []]) : super(props);
 }
 
-class CartUninitialized extends CartStates {
+class CartUninitialized extends CartState {
   @override
   String toString() {
-    // TODO: implement toString
+  
     return "Cart Uninitialized";
   }
 }
 
-class CartFetching extends CartStates{
+class CartOnProcess extends CartState {
+  final int processCode;
 
+  static const int ON_FETCHING = 0;
+  static const int ON_CREATING = 1;
+  static const int ON_CANCELING = 2;
+
+  CartOnProcess({this.processCode}) : super([processCode]);
+
+  @override
+  String toString() {
+    return "Processing cart : $processCode";
+  }
 }
 
-class CartInitialized extends CartStates {
+class CartInitialized extends CartState {
   CartInitialized({this.carts}) : super([carts]);
   final List<Cart> carts;
 
@@ -31,7 +42,7 @@ class CartInitialized extends CartStates {
   }
 }
 
-class CartError extends CartStates {
+class CartError extends CartState {
   final String error;
 
   CartError({this.error}) : super([error]);

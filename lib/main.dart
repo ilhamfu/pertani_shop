@@ -8,6 +8,8 @@ import 'package:pertani_shop/pages/login_page.dart';
 import 'package:pertani_shop/pages/main_page.dart';
 import 'package:pertani_shop/pages/product_detail_page.dart';
 import 'package:pertani_shop/pages/product_page.dart';
+import 'package:pertani_shop/pages/trasaction_page.dart';
+import 'package:pertani_shop/pages/user_page.dart';
 import 'package:pertani_shop/widgets/custom_scaffold.dart';
 import 'package:pertani_shop/widgets/filter_drawer.dart';
 
@@ -30,11 +32,10 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: "/login",
       routes: {
-        "/":(ctx)=>HomePage(),
-        "/login":(ctx)=>LoginPage(),
-        "/detail":(ctx)=>ProductDetailPage()
+        "/": (ctx) => HomePage(),
+        "/login": (ctx) => LoginPage(),
+        "/detail": (ctx) => ProductDetailPage()
       },
-      
     );
   }
 }
@@ -75,7 +76,9 @@ class _HomePageState extends State<HomePage> {
           BlocProvider<FilterBloc>(
             builder: (ctx) => FilterBloc(),
           ),
-          BlocProvider<CartBloc>(builder: (ctx)=>CartBloc()..dispatch(FetchCart()),),
+          BlocProvider<CartBloc>(
+            builder: (ctx) => CartBloc()..dispatch(FetchCart()),
+          ),
           BlocProvider<CategoryBloc>(
             builder: (ctx) => CategoryBloc()..dispatch(FetchCategory()),
           )
@@ -91,8 +94,10 @@ class _HomePageState extends State<HomePage> {
             physics: NeverScrollableScrollPhysics(),
             children: <Widget>[
               ProductPage(),
-              MainPage(),
               CartPage(),
+              MainPage(),
+              TransactionPage(),
+              UserPage(),
             ],
           ),
         ));
@@ -112,13 +117,14 @@ class CustomBottomNavigationBar extends StatelessWidget {
         "icon": Icons.shopping_cart,
       },
       {
-        "label": "Home",
-        "icon": Icons.home,
-      },
-      {
         "label": "Keranjang",
         "icon": Icons.shopping_cart,
       },
+      {
+        "label": "Home",
+        "icon": Icons.home,
+      },
+      {"label": "Transaksi", "icon": Icons.list},
       {"label": "User", "icon": Icons.person},
     ];
     return Container(
@@ -134,7 +140,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
                   _CustomBNBButton(
                       active: index == currentIndex,
                       button: button,
-                      buttonLength: 4,
+                      buttonLength: buttonList.length,
                       onTap: () {
                         changePage(index);
                       })))
@@ -173,9 +179,22 @@ class _CustomBNBButton extends StatelessWidget {
                   child: InkWell(
                     splashColor: Colors.white,
                     onTap: !active ? onTap : null,
-                    child: Icon(
-                      button["icon"],
-                      color: !active ? Colors.white : Colors.black,
+                    child: Visibility(
+                      visible: active,
+                      replacement: Icon(
+                        button["icon"],
+                        color: Colors.white,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            button["icon"],
+                            color: Colors.green,
+                          ),
+                          Text(button["label"],style: TextStyle(color: Colors.green,fontWeight: FontWeight.bold),)
+                        ],
+                      ),
                     ),
                   ),
                 )),
