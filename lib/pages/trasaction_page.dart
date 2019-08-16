@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pertani_shop/pages/image_show_page.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class TransactionPage extends StatefulWidget {
@@ -11,10 +10,10 @@ class TransactionPage extends StatefulWidget {
 
 class _TransactionPageState extends State<TransactionPage> {
   final pages = [
-    {"label": "Not Processed", "icon": Icons.event_note},
-    {"label": "On Process", "icon": Icons.directions_run},
-    {"label": "Finished", "icon": Icons.call_end},
-    {"label": "Canceled", "icon": Icons.cancel}
+    {"label": "Perlu Konfirmasi", "icon": Icons.event_note},
+    {"label": "Dalam Proses", "icon": Icons.directions_run},
+    {"label": "Selesai", "icon": Icons.call_end},
+    {"label": "Dibatalkan", "icon": Icons.cancel}
   ];
   PageController controller = PageController(initialPage: 0);
   int currentPage = 0;
@@ -51,8 +50,8 @@ class _TransactionPageState extends State<TransactionPage> {
   }
 }
 
-class _TransactionNotProcess extends StatelessWidget {
-  const _TransactionNotProcess({Key key}) : super(key: key);
+class _TransactionOnProcess extends StatelessWidget {
+  const _TransactionOnProcess({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +60,8 @@ class _TransactionNotProcess extends StatelessWidget {
         children: <Widget>[
           Container(
             width: double.maxFinite,
-            padding: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(10)),
+            padding:
+                EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(10)),
             height: ScreenUtil().setHeight(150),
             child: Stack(
               children: <Widget>[
@@ -74,7 +74,7 @@ class _TransactionNotProcess extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     height: ScreenUtil().setHeight(100),
-                    width:  ScreenUtil().setWidth(340),
+                    width: ScreenUtil().setWidth(340),
                   ),
                 ),
                 Positioned(
@@ -146,12 +146,111 @@ class _TransactionNotProcess extends StatelessWidget {
   }
 }
 
-class _TransactionOnProcess extends StatelessWidget {
-  const _TransactionOnProcess({Key key}) : super(key: key);
+class _TransactionNotProcess extends StatelessWidget {
+  const _TransactionNotProcess({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Container(
+            decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black54,
+                      blurRadius: 3,
+                      offset: Offset(2, 2))
+                ],
+                borderRadius: BorderRadius.circular(10)),
+            margin: EdgeInsets.all(ScreenUtil().setWidth(5)),
+            padding: EdgeInsets.symmetric(
+                horizontal: ScreenUtil().setWidth(15),
+                vertical: ScreenUtil().setWidth(5)),
+            height: ScreenUtil().setHeight(120),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Tanggal Pembelian",
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                      "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}",
+                      style: TextStyle(
+                          color: Colors.green, fontWeight: FontWeight.bold)),
+                ),
+                Align(
+                    alignment: Alignment.centerRight,
+                    child: SizedBox(
+                      height: 1,
+                      width: ScreenUtil().setWidth(300),
+                      child: Material(
+                        color: Colors.grey,
+                      ),
+                    )),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Kode Transaksi",
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Text("7c3c7b7f-1458-4e39-9336-3681c246be8e",
+                      style: TextStyle(
+                          color: Colors.green, fontWeight: FontWeight.bold)),
+                ),
+                Align(
+                    alignment: Alignment.centerRight,
+                    child: SizedBox(
+                      height: 1,
+                      width: ScreenUtil().setWidth(300),
+                      child: Material(
+                        color: Colors.grey,
+                      ),
+                    )),
+              ],
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+                color: Colors.red, borderRadius: BorderRadius.circular(10)),
+            margin: EdgeInsets.all(ScreenUtil().setWidth(5)),
+            width: ScreenUtil().setWidth(300),
+            height: ScreenUtil().setHeight(40),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(10),
+                splashColor: Colors.white,
+                onTap: () {
+                  
+                },
+                child: Center(
+                  child: Text(
+                    "Batalkan Trasaksi",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: ScreenUtil().setSp(20),
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
   }
 }
 

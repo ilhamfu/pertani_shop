@@ -3,7 +3,6 @@ import 'package:bloc/bloc.dart';
 
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   @override
-  // TODO: implement initialState
   TransactionState get initialState => TransactionUninitailzed();
 
   @override

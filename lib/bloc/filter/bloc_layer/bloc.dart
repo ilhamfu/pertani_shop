@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:pertani_shop/bloc/filter/bloc_layer/index.dart';
-import 'package:rxdart/rxdart.dart';
 
 class FilterBloc extends Bloc<FilterEvent, FilterState> {
   @override

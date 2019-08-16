@@ -8,7 +8,6 @@ abstract class ProductState extends Equatable {
 class ProductUninitalized extends ProductState {
   @override
   String toString() {
-    // TODO: implement toString
     return "Product is unitialized";
   }
 }
@@ -23,7 +22,6 @@ class ProductInitialized extends ProductState {
 class ProductFetching extends ProductState{
   @override
   String toString() {
-    // TODO: implement toString
     return "Product Fetching";
   }
 }
@@ -35,7 +33,6 @@ class ProductError extends ProductState {
 
   @override
   String toString() {
-    // TODO: implement toString
     return error;
   }
 }

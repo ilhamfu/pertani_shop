@@ -5,12 +5,10 @@ import 'package:pertani_shop/bloc/auth/data_layer/repository.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository _authRepository = AuthRepository();
   @override
-  // TODO: implement initialState
   AuthState get initialState => AuthUnauthorized();
 
   @override
   Stream<AuthState> mapEventToState(AuthEvent event) async* {
-    // TODO: implement mapEventToState
     try {
       if (currentState is AuthUnauthorized) {
         yield AuthLoggingIn();

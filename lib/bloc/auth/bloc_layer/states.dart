@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:pertani_shop/models/user.dart';
 
 abstract class AuthState extends Equatable {
   AuthState([List props = const []]) : super(props);
@@ -26,7 +25,6 @@ class AuthError extends AuthState {
   AuthError(this.error) : super([error]);
   @override
   String toString() {
-    // TODO: implement toString
     return super.toString();
   }
 }

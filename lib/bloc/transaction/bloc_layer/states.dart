@@ -37,7 +37,7 @@ class TransactionInitialized extends TransactionState {
 
   @override
   String toString() {
-    // TODO: implement toString
+    
     return "Transaction fetched : ${this.length}";
   }
 }
