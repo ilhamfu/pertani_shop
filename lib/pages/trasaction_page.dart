@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pertani_shop/widgets/custom_dialog.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class TransactionPage extends StatefulWidget {
@@ -152,104 +153,150 @@ class _TransactionNotProcess extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black54,
-                      blurRadius: 3,
-                      offset: Offset(2, 2))
-                ],
-                borderRadius: BorderRadius.circular(10)),
-            margin: EdgeInsets.all(ScreenUtil().setWidth(5)),
-            padding: EdgeInsets.symmetric(
-                horizontal: ScreenUtil().setWidth(15),
-                vertical: ScreenUtil().setWidth(5)),
-            height: ScreenUtil().setHeight(120),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Tanggal Pembelian",
-                    style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.w500),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                      "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}",
-                      style: TextStyle(
-                          color: Colors.green, fontWeight: FontWeight.bold)),
-                ),
-                Align(
-                    alignment: Alignment.centerRight,
-                    child: SizedBox(
-                      height: 1,
-                      width: ScreenUtil().setWidth(300),
-                      child: Material(
-                        color: Colors.grey,
-                      ),
-                    )),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Kode Transaksi",
-                    style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.w500),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text("7c3c7b7f-1458-4e39-9336-3681c246be8e",
-                      style: TextStyle(
-                          color: Colors.green, fontWeight: FontWeight.bold)),
-                ),
-                Align(
-                    alignment: Alignment.centerRight,
-                    child: SizedBox(
-                      height: 1,
-                      width: ScreenUtil().setWidth(300),
-                      child: Material(
-                        color: Colors.grey,
-                      ),
-                    )),
-              ],
+      child: Column(children: <Widget>[
+        _buildDetail(),
+        _buildCancelButton(context),
+        _buildProductList()
+      ]),
+    );
+  }
+
+  Container _buildCancelButton(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.red, borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.all(ScreenUtil().setWidth(5)),
+      width: ScreenUtil().setWidth(300),
+      height: ScreenUtil().setHeight(40),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          splashColor: Colors.white,
+          onTap: () {
+            showDialog(
+                context: context,
+                builder: (ctx) => CustomYesNoDialog(
+                      yesButtonText: "Batalkan Transaksi",
+                      noButtonText: "Kembali",
+                      description: "Anda yakin ingin membatalkan transaksi?",
+                      title: "Pembatalan transaksi",
+                    ));
+          },
+          child: Center(
+            child: Text(
+              "Batalkan Trasaksi",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: ScreenUtil().setSp(20),
+                  fontWeight: FontWeight.bold),
             ),
           ),
-          Container(
-            decoration: BoxDecoration(
-                color: Colors.red, borderRadius: BorderRadius.circular(10)),
-            margin: EdgeInsets.all(ScreenUtil().setWidth(5)),
-            width: ScreenUtil().setWidth(300),
-            height: ScreenUtil().setHeight(40),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(10),
-                splashColor: Colors.white,
-                onTap: () {
-                  
-                },
-                child: Center(
-                  child: Text(
-                    "Batalkan Trasaksi",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: ScreenUtil().setSp(20),
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
+        ),
+      ),
+    );
+  }
+
+  Container _buildDetail() {
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black54, blurRadius: 3, offset: Offset(2, 2))
+          ],
+          borderRadius: BorderRadius.circular(10)),
+      margin: EdgeInsets.all(ScreenUtil().setWidth(5)),
+      padding: EdgeInsets.symmetric(
+          horizontal: ScreenUtil().setWidth(15),
+          vertical: ScreenUtil().setWidth(5)),
+      height: ScreenUtil().setHeight(120),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Tanggal Pembelian",
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
             ),
-          )
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+                "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}",
+                style: TextStyle(
+                    color: Colors.green, fontWeight: FontWeight.bold)),
+          ),
+          Align(
+              alignment: Alignment.centerRight,
+              child: SizedBox(
+                height: 1,
+                width: ScreenUtil().setWidth(300),
+                child: Material(
+                  color: Colors.grey,
+                ),
+              )),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              "Kode Transaksi",
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text("7c3c7b7f-1458-4e39-9336-3681c246be8e",
+                style: TextStyle(
+                    color: Colors.green, fontWeight: FontWeight.bold)),
+          ),
+          Align(
+              alignment: Alignment.centerRight,
+              child: SizedBox(
+                height: 1,
+                width: ScreenUtil().setWidth(300),
+                child: Material(
+                  color: Colors.grey,
+                ),
+              )),
         ],
       ),
+    );
+  }
+
+  _buildProductList() {
+    return Expanded(
+      child: Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black54, blurRadius: 3, offset: Offset(2, 2))
+              ],
+              borderRadius: BorderRadius.circular(10)),
+          margin: EdgeInsets.all(ScreenUtil().setWidth(5)),
+          padding: EdgeInsets.symmetric(
+              horizontal: ScreenUtil().setWidth(5),
+              vertical: ScreenUtil().setWidth(5)),
+          height: ScreenUtil().setHeight(120),
+          child: ListView.builder(
+            itemCount: 20,
+            itemBuilder: (ctx, index) => Container(
+                decoration: BoxDecoration(
+                  color: [
+                    Colors.red,
+                    Colors.blue,
+                    Colors.grey,
+                    Colors.yellow,
+                    Colors.purple
+                  ][index % 5],
+                  borderRadius: BorderRadius.circular(5)
+                ),
+                height: 50,
+                width: double.infinity),
+          )),
     );
   }
 }

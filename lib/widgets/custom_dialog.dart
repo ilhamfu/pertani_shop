@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class CustomDialog extends StatelessWidget {
-  final String title, description, buttonText;
+class CustomYesNoDialog extends StatelessWidget {
+  final String title, description, yesButtonText, noButtonText;
   final Image image;
 
-  CustomDialog({
+  CustomYesNoDialog({
     @required this.title,
     @required this.description,
-    @required this.buttonText,
+    @required this.yesButtonText,
+    @required this.noButtonText,
     this.image,
   });
 
@@ -28,12 +30,12 @@ class CustomDialog extends StatelessWidget {
       children: <Widget>[
         Container(
           padding: EdgeInsets.only(
-            top: 82,
-            bottom: 16,
-            left: 16,
-            right: 16,
+            top: ScreenUtil().setWidth( 31),
+            bottom: ScreenUtil().setWidth(8),
+            left: ScreenUtil().setWidth(8),
+            right: ScreenUtil().setWidth(8),
           ),
-          margin: EdgeInsets.only(top: 66),
+          margin: EdgeInsets.only(top: 31),
           decoration: new BoxDecoration(
             color: Colors.white,
             shape: BoxShape.rectangle,
@@ -52,7 +54,7 @@ class CustomDialog extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: 24.0,
+                  fontSize: 20.0,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -67,11 +69,65 @@ class CustomDialog extends StatelessWidget {
               SizedBox(height: 24.0),
               Align(
                 alignment: Alignment.bottomRight,
-                child: FlatButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // To close the dialog
-                  },
-                  child: Text(buttonText),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Material(
+                        borderRadius: BorderRadius.circular(5),
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(5),
+                          onTap: () {
+                            Navigator.of(context).pop(true);
+                          },
+                          child: Center(
+                            child: Text(
+                              noButtonText,
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700),
+                            ),
+                          ),
+                        ),
+                      ),
+                      height: 30,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Material(
+                        borderRadius: BorderRadius.circular(5),
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(5),
+                          onTap: () {
+                            Navigator.of(context).pop(false);
+                          },
+                          child: Center(
+                            child: Text(
+                              yesButtonText,
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700),
+                            ),
+                          ),
+                        ),
+                      ),
+                      height: 30,
+                      padding: EdgeInsets.symmetric(horizontal: 12),
+                    )
+                  ],
                 ),
               ),
             ],
@@ -92,8 +148,8 @@ class _DialogIcon extends StatelessWidget {
       left: 16,
       right: 16,
       child: CircleAvatar(
-        backgroundColor: Colors.blueAccent,
-        radius: 66,
+        backgroundColor: Colors.green,
+        radius: 30,
       ),
     );
   }

@@ -512,6 +512,7 @@ class _ProductPageBody extends StatelessWidget {
 
 class _ProductPageState extends State<ProductPage> {
   @override
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
@@ -526,6 +527,7 @@ class _ProductPageState extends State<ProductPage> {
 
   @override
   void initState() {
+    BlocProvider.of<FilterBloc>(context).dispatch(EmptyFilter());
     super.initState();
   }
 }
