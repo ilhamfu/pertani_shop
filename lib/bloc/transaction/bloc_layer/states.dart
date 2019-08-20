@@ -28,17 +28,16 @@ class TransactionOnProcess extends TransactionState {
 }
 
 class TransactionInitialized extends TransactionState {
-  final List<Transaction> transaction;
-
-  bool get isEmpty => transaction.length == 0;
-  int get length => transaction.length;
+  final Transaction transaction;
 
   TransactionInitialized({this.transaction}) : super([transaction]);
+
+  int get id => transaction.id;
 
   @override
   String toString() {
     
-    return "Transaction fetched : ${this.length}";
+    return "Transaction fetched : ${transaction.id}";
   }
 }
 

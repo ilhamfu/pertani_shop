@@ -8,6 +8,7 @@ class CodedException implements Exception {
   static const int GOOGLE_AUTH_ERROR = 3;
   static const int EMAIL_AUTH_ERROR = 4;
   static const int LOGOUT_AUTH_ERROR = 5;
+  static const int PRODUCT_FETCH_ERROR = 6;
 
   static const String FACEBOOK_AUTH_ERROR_MESSAGE =
       "Facebook authentication error";
@@ -18,6 +19,7 @@ class CodedException implements Exception {
   static const String LOGOUT_AUTH_ERROR_MESSAGE =
       "Log Out authentication error";
   static const String DEFAULT_MESSAGE = "Unknown Code";
+  static const String PRODUCT_FETCH_MESSAGE = "Failed to fetch product";
 
   String errorMessage() {
     switch (code) {

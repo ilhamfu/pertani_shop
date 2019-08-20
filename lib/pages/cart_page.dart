@@ -5,6 +5,7 @@ import 'package:pertani_shop/bloc/cart/bloc_layer/index.dart';
 import 'package:pertani_shop/models/cart.dart';
 import 'package:pertani_shop/widgets/add_cart_modal.dart';
 import 'package:pertani_shop/widgets/clip_shadow_path.dart';
+import 'package:pertani_shop/widgets/custom_dialog.dart';
 
 class CartPage extends StatefulWidget {
   CartPage({Key key}) : super(key: key);
@@ -32,9 +33,22 @@ class _CartPageState extends State<CartPage> {
                     itemCount: state.length,
                     itemBuilder: (ctx, index) {
                       return Dismissible(
-                          key: Key("Key $index"),
-                          onDismissed: (direction){
-                            BlocProvider.of<CartBloc>(context).dispatch(CartDelete(cart: state.carts[index]));
+                          key: Key("$index"),
+                          direction: DismissDirection.endToStart,
+                          confirmDismiss: (_) async => (await showDialog(
+                                  context: context,
+                                  builder: (ctx) => CustomYesNoDialog(
+                                        yesButtonText: "Hapus Dari Keranjang",
+                                        noButtonText: "Batal",
+                                        description:
+                                            "Anda yakin ingin membatalkan transaksi?",
+                                        title:
+                                            "Hapus produk $index dari keranjang?",
+                                      )) ??
+                              false),
+                          onDismissed: (direction) {
+                            BlocProvider.of<CartBloc>(context)
+                                .dispatch(CartDelete(cart: state.carts[index]));
                           },
                           child: CartItem(cart: state.carts[index]));
                     },

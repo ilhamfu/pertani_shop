@@ -13,7 +13,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
           yield TransactionOnProcess(
               processCode: TransactionOnProcess.ON_FETCHING);
           await Future.delayed(Duration(seconds: 10));
-          yield TransactionInitialized(transaction: []);
+          yield TransactionInitialized();
           return;
         }
       }

@@ -84,7 +84,7 @@ class CustomYesNoDialog extends StatelessWidget {
                         child: InkWell(
                           borderRadius: BorderRadius.circular(5),
                           onTap: () {
-                            Navigator.of(context).pop(true);
+                            Navigator.of(context).pop(false);
                           },
                           child: Center(
                             child: Text(
@@ -112,7 +112,7 @@ class CustomYesNoDialog extends StatelessWidget {
                         child: InkWell(
                           borderRadius: BorderRadius.circular(5),
                           onTap: () {
-                            Navigator.of(context).pop(false);
+                            Navigator.of(context).pop(true);
                           },
                           child: Center(
                             child: Text(

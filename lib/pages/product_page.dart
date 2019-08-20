@@ -564,7 +564,7 @@ class _SlidingProductCard extends StatelessWidget {
                     color: Colors.green,
                     icon: Icons.add_shopping_cart,
                     onTap: () async {
-                      var amount = await showModalBottomSheet<int>(
+                      var amount = (await showModalBottomSheet<int>(
                           builder: (ctx) {
                             return AddToCartWidget(
                               product: product,
@@ -574,7 +574,9 @@ class _SlidingProductCard extends StatelessWidget {
                           isScrollControlled: true,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(10))));
+                                  top: Radius.circular(10)))))??0;
+                      if (amount==0) return;
+                      
                       BlocProvider.of<CartBloc>(context).dispatch(CartCreate(
                           cart: Cart(
                               amount: amount,

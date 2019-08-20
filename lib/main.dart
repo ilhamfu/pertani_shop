@@ -8,7 +8,7 @@ import 'package:pertani_shop/pages/login_page.dart';
 import 'package:pertani_shop/pages/main_page.dart';
 import 'package:pertani_shop/pages/product_detail_page.dart';
 import 'package:pertani_shop/pages/product_page.dart';
-import 'package:pertani_shop/pages/trasaction_page.dart';
+import 'package:pertani_shop/pages/transaction_page.dart';
 import 'package:pertani_shop/pages/user_page.dart';
 import 'package:pertani_shop/widgets/custom_scaffold.dart';
 import 'package:pertani_shop/widgets/filter_drawer.dart';
