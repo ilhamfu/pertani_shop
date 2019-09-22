@@ -8,6 +8,7 @@ import 'package:pertani_shop/pages/login_page.dart';
 import 'package:pertani_shop/pages/main_page.dart';
 import 'package:pertani_shop/pages/product_detail_page.dart';
 import 'package:pertani_shop/pages/product_page.dart';
+import 'package:pertani_shop/pages/register_page.dart';
 import 'package:pertani_shop/pages/transaction_page.dart';
 import 'package:pertani_shop/pages/user_page.dart';
 import 'package:pertani_shop/widgets/custom_scaffold.dart';
@@ -30,13 +31,42 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      initialRoute: "/login",
+      initialRoute: "/",
       routes: {
-        "/": (ctx) => HomePage(),
-        "/login": (ctx) => LoginPage(),
-        "/detail": (ctx) => ProductDetailPage()
+        "/": (ctx) => LandingPage(),
+        "/detail": (ctx) => ProductDetailPage(),
+        "/register": (ctx) => RegisterPage()
       },
     );
+  }
+}
+
+class LandingPage extends StatefulWidget {
+  LandingPage({Key key}) : super(key: key);
+
+  _LandingPageState createState() => _LandingPageState();
+}
+
+class _LandingPageState extends State<LandingPage> {
+  bool loggedIn = false;
+
+  void login() {
+    setState(() {
+      loggedIn = true;
+    });
+  }
+  void logout() {
+    setState(() {
+      loggedIn = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ScreenUtil.instance =
+        ScreenUtil(width: 360, height: 640, allowFontScaling: true)
+          ..init(context);
+    return loggedIn ? HomePage() : LoginPage(login: login);
   }
 }
 
@@ -62,6 +92,7 @@ class _HomePageState extends State<HomePage> {
       _pageController.jumpToPage(index);
     });
   }
+
   @override
   void initState() {
     super.initState();
@@ -70,9 +101,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.instance =
-        ScreenUtil(width: 360, height: 640, allowFontScaling: true)
-          ..init(context);
     return MultiBlocProvider(
         providers: [
           BlocProvider<ProductBloc>(
@@ -197,7 +225,12 @@ class _CustomBNBButton extends StatelessWidget {
                             button["icon"],
                             color: Colors.green,
                           ),
-                          Text(button["label"],style: TextStyle(color: Colors.green,fontWeight: FontWeight.bold),)
+                          Text(
+                            button["label"],
+                            style: TextStyle(
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold),
+                          )
                         ],
                       ),
                     ),
