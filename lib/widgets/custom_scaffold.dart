@@ -31,7 +31,7 @@ class CustomScaffold extends StatelessWidget {
         floatingActionButton: floatingActionButton,
         floatingActionButtonLocation: floatingActionButtonLocation,
         floatingActionButtonAnimator: floatingActionButtonAnimator,
-        backgroundColor: Colors.green,
+        backgroundColor: Color(0xff13DF4C),
         body: SafeArea(
           child: Container(
             color: Colors.white,

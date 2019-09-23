@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pertani_shop/bloc/cart/bloc_layer/index.dart';
-import 'package:pertani_shop/bloc/product_category/bloc_layer/index.dart';
 import 'package:pertani_shop/pages/cart_page.dart';
 import 'package:pertani_shop/pages/login_page.dart';
 import 'package:pertani_shop/pages/main_page.dart';
@@ -11,11 +9,9 @@ import 'package:pertani_shop/pages/product_page.dart';
 import 'package:pertani_shop/pages/register_page.dart';
 import 'package:pertani_shop/pages/transaction_page.dart';
 import 'package:pertani_shop/pages/user_page.dart';
+import 'package:pertani_shop/utils/pertani_icon_icons.dart';
 import 'package:pertani_shop/widgets/custom_scaffold.dart';
 import 'package:pertani_shop/widgets/filter_drawer.dart';
-
-import 'bloc/filter/bloc_layer/index.dart';
-import 'bloc/product/bloc_layer/index.dart';
 
 void main() {
   runApp(MyApp());
@@ -55,6 +51,7 @@ class _LandingPageState extends State<LandingPage> {
       loggedIn = true;
     });
   }
+
   void logout() {
     setState(() {
       loggedIn = false;
@@ -66,18 +63,22 @@ class _LandingPageState extends State<LandingPage> {
     ScreenUtil.instance =
         ScreenUtil(width: 360, height: 640, allowFontScaling: true)
           ..init(context);
-    return loggedIn ? HomePage() : LoginPage(login: login);
+    return loggedIn
+        ? HomePage(
+            logout: logout,
+          )
+        : LoginPage(login: login);
   }
 }
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
-
+  HomePage({Key key, this.logout}) : super(key: key);
+  final Function logout;
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  int _currentPage = 1;
+  int _currentPage = 2;
   PageController _pageController;
 
   @override
@@ -103,22 +104,11 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
         providers: [
-          BlocProvider<ProductBloc>(
-            builder: (ctx) => ProductBloc()..dispatch(FetchAllProduct()),
-          ),
-          BlocProvider<FilterBloc>(
-            builder: (ctx) => FilterBloc(),
-          ),
-          BlocProvider<CartBloc>(
-            builder: (ctx) => CartBloc()..dispatch(FetchCart()),
-          ),
-          BlocProvider<CategoryBloc>(
-            builder: (ctx) => CategoryBloc()..dispatch(FetchCategory()),
-          )
+          
         ],
         child: CustomScaffold(
           endDrawer: _currentPage == 0 ? FilterDrawer() : null,
-          bottomNavigationBar: CustomBottomNavigationBar(
+          bottomNavigationBar: _CustomBottomNavigationBar(
             currentIndex: _currentPage,
             changePage: _changePage,
           ),
@@ -130,15 +120,18 @@ class _HomePageState extends State<HomePage> {
               CartPage(),
               MainPage(),
               TransactionPage(),
-              UserPage(),
+              UserPage(
+                logout: widget.logout,
+              ),
             ],
           ),
         ));
   }
 }
 
-class CustomBottomNavigationBar extends StatelessWidget {
-  const CustomBottomNavigationBar({Key key, this.currentIndex, this.changePage})
+class _CustomBottomNavigationBar extends StatelessWidget {
+  const _CustomBottomNavigationBar(
+      {Key key, this.currentIndex, this.changePage})
       : super(key: key);
   final int currentIndex;
   final Function changePage;
@@ -147,18 +140,18 @@ class CustomBottomNavigationBar extends StatelessWidget {
     var buttonList = [
       {
         "label": "Produk",
-        "icon": Icons.shopping_cart,
+        "icon": PertaniIcon.flour,
       },
       {
         "label": "Keranjang",
-        "icon": Icons.shopping_cart,
+        "icon": PertaniIcon.shopping_cart,
       },
       {
-        "label": "Home",
-        "icon": Icons.home,
+        "label": "Beranda",
+        "icon": PertaniIcon.icon,
       },
-      {"label": "Transaksi", "icon": Icons.list},
-      {"label": "User", "icon": Icons.person},
+      {"label": "Transaksi", "icon": PertaniIcon.transaction},
+      {"label": "User", "icon": PertaniIcon.users},
     ];
     return Container(
       height: kBottomNavigationBarHeight,
@@ -206,7 +199,7 @@ class _CustomBNBButton extends StatelessWidget {
                 duration: Duration(milliseconds: 500),
                 height: double.infinity,
                 width: double.infinity,
-                color: active ? Colors.white : Colors.green,
+                color: active ? Colors.white : Color(0xff13DF4C),
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
@@ -217,19 +210,23 @@ class _CustomBNBButton extends StatelessWidget {
                       replacement: Icon(
                         button["icon"],
                         color: Colors.white,
+                        size: ScreenUtil().setWidth(28),
+                        
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Icon(
                             button["icon"],
-                            color: Colors.green,
+                            color: Color(0xff13DF4C),
+                            size: ScreenUtil().setWidth(20),
                           ),
                           Text(
                             button["label"],
                             style: TextStyle(
-                                color: Colors.green,
-                                fontWeight: FontWeight.bold),
+                              fontSize: ScreenUtil().setSp(12),
+                                color: Color(0xff13DF4C),
+                                fontWeight: FontWeight.bold,),
                           )
                         ],
                       ),
@@ -240,7 +237,7 @@ class _CustomBNBButton extends StatelessWidget {
               duration: Duration(milliseconds: 500),
               height: 5,
               width: double.infinity,
-              color: active ? Colors.green : Colors.orange,
+              color: active ? Color(0xff13DF4C):Color(0xffC5EC3E) ,
             ),
           ],
         ));

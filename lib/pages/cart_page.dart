@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pertani_shop/bloc/cart/bloc_layer/index.dart';
 import 'package:pertani_shop/models/cart.dart';
 import 'package:pertani_shop/widgets/add_cart_modal.dart';
 import 'package:pertani_shop/widgets/clip_shadow_path.dart';
@@ -20,41 +19,25 @@ class _CartPageState extends State<CartPage> {
       color: Colors.white,
       child: Column(
         children: <Widget>[
-          Expanded(child: BlocBuilder<CartBloc, CartState>(
-            builder: (ctx, state) {
-              if ((state is CartOnProcess) &&
-                  (state.processCode == CartOnProcess.ON_FETCHING)) {
-                return CircularProgressIndicator();
-              } else if (state is CartInitialized) {
-                if (state.isEmpty)
-                  return Text("Your Cart Is Empty");
-                else
-                  return ListView.builder(
-                    itemCount: state.length,
-                    itemBuilder: (ctx, index) {
-                      return Dismissible(
-                          key: Key("$index"),
-                          direction: DismissDirection.endToStart,
-                          confirmDismiss: (_) async => (await showDialog(
-                                  context: context,
-                                  builder: (ctx) => CustomYesNoDialog(
-                                        yesButtonText: "Hapus Dari Keranjang",
-                                        noButtonText: "Batal",
-                                        description:
-                                            "Anda yakin ingin membatalkan transaksi?",
-                                        title:
-                                            "Hapus produk $index dari keranjang?",
-                                      )) ??
-                              false),
-                          onDismissed: (direction) {
-                            BlocProvider.of<CartBloc>(context)
-                                .dispatch(CartDelete(cart: state.carts[index]));
-                          },
-                          child: CartItem(cart: state.carts[index]));
-                    },
-                  );
-              } else
-                return Text("Error while fetching cart");
+          Expanded(
+              child: ListView.builder(
+            itemCount: 10,
+            itemBuilder: (ctx, index) {
+              return Dismissible(
+                  key: Key("$index"),
+                  direction: DismissDirection.endToStart,
+                  confirmDismiss: (_) async => (await showDialog(
+                          context: context,
+                          builder: (ctx) => CustomYesNoDialog(
+                                yesButtonText: "Hapus Dari Keranjang",
+                                noButtonText: "Batal",
+                                description:
+                                    "Anda yakin ingin membatalkan transaksi?",
+                                title: "Hapus produk $index dari keranjang?",
+                              )) ??
+                      false),
+                  onDismissed: (direction) {},
+                  child: CartItem());
             },
           )),
           Container(
@@ -89,17 +72,13 @@ class _CartPageState extends State<CartPage> {
                                 fontWeight: FontWeight.w700,
                                 fontSize: ScreenUtil().setSp(16)),
                           ),
-                          BlocBuilder<CartBloc, CartState>(
-                            builder: (ctx, state) => Text(
-                              (state is CartInitialized)
-                                  ? "Rp. ${state.total}"
-                                  : "Rp. 0",
-                              style: TextStyle(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: ScreenUtil().setSp(16)),
-                            ),
-                          )
+                          Text(
+                            "Rp. 0",
+                            style: TextStyle(
+                                color: Colors.green,
+                                fontWeight: FontWeight.w700,
+                                fontSize: ScreenUtil().setSp(16)),
+                          ),
                         ],
                       )),
                 )
@@ -154,8 +133,6 @@ class CartItem extends StatelessWidget {
               color: Colors.transparent,
               child: InkWell(
                 onTap: () {
-                  BlocProvider.of<CartBloc>(context)
-                      .dispatch(CartToggle(cart: cart));
                 },
               ),
             ),
@@ -175,8 +152,6 @@ class CartItem extends StatelessWidget {
                             )) ??
                     0;
                 if (amount > 0) {
-                  BlocProvider.of<CartBloc>(context)
-                      .dispatch(CartUpdateAmount(amount: amount, cart: cart));
                 }
                 // BlocProvider.of<CartBloc>(context).dispatch(AddCart());
               },

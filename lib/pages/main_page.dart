@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pertani_shop/utils/pertani_icon_icons.dart';
 
 import 'package:pertani_shop/widgets/sliver_delegate.dart';
 
@@ -12,141 +14,105 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        
-        child: CustomScrollView(
-          slivers: <Widget>[
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: CustomSliverDelegate(
-                  child: Header(), maxHeight: 50, minHeight: 50),
-            ),
-            SliverList(
-              delegate: SliverChildListDelegate([
-                _NewsCarousel(),
-              ]),
-            ),
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: CustomSliverDelegate(
-                minHeight: 40,
-                maxHeight: 40,
+    return Column(
+      children: <Widget>[
+        new _CustomAppBar(),
+        Expanded(
+            child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          child: CustomScrollView(
+            slivers: <Widget>[
+              SliverToBoxAdapter(
                 child: Container(
-                    height: 40,
-                    width: double.infinity,
-                    color: Colors.green,
-                    child: Center(
-                      child: Text("Produk Terbaik Kami",
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700)),
-                    )),
+                  margin: EdgeInsets.symmetric(
+                    vertical: ScreenUtil().setHeight(30),
+                  ),
+                  decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black38,
+                            blurRadius: 5,
+                            offset: Offset(0, 5))
+                      ]),
+                  height: ScreenUtil().setWidth(80),
+                ),
               ),
-            ),
-            _TopProductList()
-          ],
-        ),
+              SliverGrid(
+                delegate: SliverChildBuilderDelegate((ctx, index) {
+                  print(index.toString());
+                  return _ProductItem(
+                    index: index,
+                  );
+                }, childCount: 100),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    childAspectRatio: 0.75,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                    crossAxisCount: 2),
+              )
+            ],
+          ),
+        )),
+      ],
     );
   }
 }
 
-class _TopProductList extends StatefulWidget {
-  _TopProductList({Key key}) : super(key: key);
-
-  __TopProductListState createState() => __TopProductListState();
-}
-
-class __TopProductListState extends State<_TopProductList> {
-  @override
-  Widget build(BuildContext context) {
-    return SliverPadding(
-      padding: EdgeInsets.all(3),
-      sliver: SliverGrid(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          childAspectRatio: 3 / 4,
-          crossAxisSpacing: 4,
-          mainAxisSpacing: 4,
-        ),
-        delegate: SliverChildBuilderDelegate((context, index) {
-          return new _ProductItem(index: index);
-        }, childCount: 50),
-      ),
-    );
-  }
-}
-
-class _ProductItem extends StatefulWidget {
+class _ProductItem extends StatelessWidget {
   const _ProductItem({
     Key key,
     this.index,
   }) : super(key: key);
   final int index;
   @override
-  __ProductItemState createState() => __ProductItemState();
-}
-
-class __ProductItemState extends State<_ProductItem> {
-  ScrollController _scrollController = new ScrollController();
-
-  void _doScroll() async {
-    await _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        curve: Curves.easeIn,
-        duration: Duration(milliseconds: 3000));
-    await Future.delayed(Duration(seconds: 1));
-    await _scrollController.animateTo(0,
-        curve: Curves.easeOut, duration: Duration(milliseconds: 1000));
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5),
-          boxShadow: [
-            BoxShadow(color: Colors.black, blurRadius: 2, offset: Offset(2, 2))
-          ]),
+      decoration:
+          BoxDecoration(borderRadius: BorderRadius.circular(10), boxShadow: [
+        BoxShadow(color: Colors.black54, blurRadius: 5, offset: Offset(5, 5))
+      ]),
       child: Stack(
         children: <Widget>[
           ClipRRect(
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.circular(10),
               child: CachedNetworkImage(
-                imageUrl:
-                    "https://picsum.photos/id/${widget.index % 10}/150/200",
+                imageUrl: "https://picsum.photos/id/$index/300/400",
+                placeholder: (ctx, str) =>
+                    Image.asset("assets/product_placeholder.png"),
+                errorWidget: (ctx, str, err) =>
+                    Image.asset("assets/product_placeholder.png"),
               )),
           Positioned.fill(
-            child: GestureDetector(
-              onLongPress: _doScroll,
-              child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 3, horizontal: 3),
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          colors: [
-                        Colors.black54,
-                        Colors.black12,
-                        Colors.transparent
-                      ],
-                          stops: [
-                        0.2,
-                        0.4,
-                        0.9,
-                      ])),
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: SingleChildScrollView(
-                      controller: _scrollController,
-                      scrollDirection: Axis.horizontal,
-                      child: Text(
-                          "aklsjdlkasjdlkajsdlkaj alksjdlkasjdlkajs lkd alskdjalksjd askdj asl",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold)),
-                    ),
-                  )),
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                  color: Colors.black38,
+                  borderRadius: BorderRadius.circular(10)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Container(
+                      height: 25,
+                      child: Center(
+                          child: Text("Rp. 20000",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: ScreenUtil().setSp(15),
+                                  fontWeight: FontWeight.bold))),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(.75),
+                      )),
+                  Text(
+                    "Nama Produk $index",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                        fontSize: ScreenUtil().setSp(15)),
+                  )
+                ],
+              ),
             ),
           )
         ],
@@ -155,230 +121,94 @@ class __ProductItemState extends State<_ProductItem> {
   }
 }
 
-class _NewsCarousel extends StatefulWidget {
-  const _NewsCarousel({
+class _CustomAppBar extends StatelessWidget {
+  const _CustomAppBar({
     Key key,
   }) : super(key: key);
 
   @override
-  __NewsCarouselState createState() => __NewsCarouselState();
-}
-
-class __NewsCarouselState extends State<_NewsCarousel> {
-  PageController _pageController = PageController();
-  double _page = 0;
-  @override
-  void initState() {
-    super.initState();
-    _pageController.addListener(() {
-      setState(() {
-        _page = _pageController.page;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Container(
-            height: 40,
-            width: double.infinity,
-            color: Colors.green,
-            child: Center(
-              child: Text("Kabar Pertani",
-                  style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700)),
-            )),
-        Container(
-            width: double.infinity,
-            color: Colors.white,
-            height: 200,
-            child: Stack(children: <Widget>[
-              PageView.builder(
-                controller: _pageController,
-                itemBuilder: (ctx, idx) {
-                  return Stack(
-                    children: <Widget>[
-                      Container(
-                        alignment: Alignment.center,
-                        child: CachedNetworkImage(
-                          imageUrl: "https://picsum.photos/id/$idx/250/200",
-                        ),
-                      ),
-                      Positioned.fill(
-                        child: Container(
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                  begin: Alignment.bottomCenter,
-                                  end: Alignment.topCenter,
-                                  colors: [
-                                Colors.black38,
-                                Colors.black12,
-                                Colors.transparent
-                              ],
-                                  stops: [
-                                0.2,
-                                0.5,
-                                0.9
-                              ])),
-                        ),
-                      ),
-                      Positioned.fill(
-                        child: Container(
-                            padding: EdgeInsets.only(bottom: 25),
-                            child: Align(
-                              child: Text("This is the $idx news",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w700)),
-                              alignment: Alignment.bottomCenter,
-                            )),
-                      )
-                    ],
-                  );
-                },
-                itemCount: 7,
-              ),
-              Positioned.fill(
-                child: _PageIndicator(page: _page),
-              )
-            ])),
-      ],
-    );
-  }
-}
-
-class _PageIndicator extends StatelessWidget {
-  const _PageIndicator({Key key, this.page}) : super(key: key);
-  final double page;
-  @override
-  Widget build(BuildContext context) {
-    List<Widget> output = [];
-    for (var i = 0; i < 7; i++) {
-      output.add(Container(
-          height: 2,
-          width: 15,
-          decoration: BoxDecoration(
-              color: i == page.round() ? Colors.green : Colors.white,
-              boxShadow: [
-                BoxShadow(
-                    color: i == page.round() ? Colors.green : Colors.white,
-                    blurRadius: 2)
-              ]),
-          margin: EdgeInsets.symmetric(horizontal: 2)));
-    }
-    return Container(
-      padding: EdgeInsets.only(bottom: 10),
-      child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: output),
-    );
-  }
-}
-
-class Header extends StatefulWidget {
-  const Header({Key key}) : super(key: key);
-
-  @override
-  _HeaderState createState() => _HeaderState();
-}
-
-class _HeaderState extends State<Header> {
-  FocusNode searchFocusNode = FocusNode();
-
-  @override
-  void initState() {
-    super.initState();
-    searchFocusNode.addListener(() {
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    searchFocusNode.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
-      padding: EdgeInsets.symmetric(horizontal: 5),
+      height: kToolbarHeight,
+      decoration: BoxDecoration(
+          color: Color(0xff13DF4C),
+          boxShadow: [BoxShadow(color: Colors.black38, blurRadius: 5)]),
       child: Row(
         children: <Widget>[
-          Container(
-            padding: EdgeInsets.fromLTRB(2, 2, 2, 1),
-            decoration: BoxDecoration(
-                color: Colors.green,
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    bottomLeft: Radius.circular(10)),
-                border: Border.all(color: Colors.green, width: 3)),
-            child: Icon(
-              Icons.search,
-              color: Colors.white,
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              child: TextField(
+                style: TextStyle(fontSize: ScreenUtil().setSp(18)),
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.search,
+                decoration: InputDecoration(
+                    fillColor: Colors.white,
+                    filled: true,
+                    hintText: "Cari Produk",
+                    hintStyle: TextStyle(
+                        color: Colors.grey, fontWeight: FontWeight.bold),
+                    prefixIcon: Icon(Icons.search),
+                    contentPadding: EdgeInsets.all(0),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30))),
+              ),
             ),
           ),
-          Expanded(
-              child: TextField(
-                  maxLines: 1,
-                  focusNode: searchFocusNode,
-                  decoration: InputDecoration(
-                    hintText: "Search",
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 7, horizontal: 10),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(10),
-                            bottomRight: Radius.circular(10))),
-                  ))),
-          !searchFocusNode.hasFocus
-              ? Row(
-                  children: <Widget>[
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(3, 3, 3, 2),
-                      decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.green, width: 2)),
-                      child: Icon(
-                        Icons.chat,
-                        color: Colors.white,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Container(
-                      padding: EdgeInsets.fromLTRB(3, 3, 3, 2),
-                      decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.green, width: 2)),
-                      child: Icon(
-                        Icons.notifications,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                )
-              : Container(),
+          _buildButton(),
         ],
       ),
     );
+  }
+
+  Row _buildButton() {
+    return Row(children: <Widget>[
+      Container(
+        decoration: BoxDecoration(color: Color(0xff0FC442), boxShadow: [
+          BoxShadow(
+              color: Color.fromRGBO(0x0f, 0xc4, 0x42, 0.5),
+              blurRadius: 2,
+              offset: Offset(0, -5))
+        ]),
+        width: 2,
+      ),
+      Container(
+        width: ScreenUtil().setWidth(50),
+        child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+                splashColor: Colors.white,
+                onTap: () {},
+                child: Icon(
+                  PertaniIcon.chat,
+                  color: Colors.white,
+                  size: ScreenUtil().setWidth(30),
+                ))),
+      ),
+      Container(
+        decoration: BoxDecoration(color: Color(0xff0FC442), boxShadow: [
+          BoxShadow(
+              color: Color.fromRGBO(0x0f, 0xc4, 0x42, 0.5),
+              blurRadius: 2,
+              offset: Offset(0, -5))
+        ]),
+        width: 2,
+      ),
+      Container(
+        width: ScreenUtil().setWidth(50),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            splashColor: Colors.white,
+            onTap: () {},
+            child: Icon(
+              Icons.notifications,
+              color: Colors.white,
+              size: ScreenUtil().setWidth(30),
+            ),
+          ),
+        ),
+      ),
+    ]);
   }
 }
