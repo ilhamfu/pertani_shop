@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:pertani_shop/models/product_category.dart';
 
-class FilterEvent extends Equatable {
+abstract class FilterEvent extends Equatable {
   FilterEvent([List props = const []]) : super(props);
 }
 

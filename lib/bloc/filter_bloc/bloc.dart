@@ -21,7 +21,11 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
       yield FilterInitialized.fromInitialized(currentState,
           maxPrice: event.maxPrice, minPrice: event.minPrice);
     } else if (event is FilterSetStar) {
-      yield FilterInitialized.fromInitialized(currentState, star: event.star);
+      var newState = FilterInitialized.fromInitialized(currentState, star: event.star);
+      print(currentState==newState);
+      print((currentState as FilterInitialized).star);
+      print(newState.star);
+      yield newState;
     } else if (event is FilterSetSearch) {
       yield FilterInitialized.fromInitialized(currentState,
           search: event.search);

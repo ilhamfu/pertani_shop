@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:pertani_shop/models/product_category.dart';
 
-class FilterState extends Equatable {
+abstract class FilterState extends Equatable {
   FilterState([List props = const []]) : super(props);
 }
 
@@ -23,7 +23,7 @@ class FilterInitialized extends FilterState {
       int maxPrice,
       bool clearCategory = false}) {
     return FilterInitialized(
-        category: category ?? clearCategory ? null : f.category,
+        category: clearCategory ? null : (category ?? f.category),
         search: search ?? f.search,
         star: star ?? f.star,
         maxPrice: maxPrice ?? f.maxPrice,
