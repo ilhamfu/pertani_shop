@@ -192,7 +192,7 @@ class _ProductPageBody extends StatelessWidget {
           padding: EdgeInsets.all(ScreenUtil().setWidth(10)),
           sliver:SliverGrid(
                   delegate: SliverChildBuilderDelegate((ctx, index) {
-                    return _SlidingProductCard();
+                    return _SlidingProductCard(index:index);
                   }, childCount:5),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       childAspectRatio: 3 / 5,

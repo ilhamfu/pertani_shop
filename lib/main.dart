@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pertani_shop/bloc/category/bloc/index.dart';
 import 'package:pertani_shop/bloc/filter_bloc/index.dart';
 import 'package:pertani_shop/pages/cart_page.dart';
 import 'package:pertani_shop/pages/login_page.dart';
@@ -105,7 +106,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
         providers: [
-          BlocProvider<FilterBloc>(builder: (ctx)=>FilterBloc())
+          BlocProvider<FilterBloc>(builder: (ctx)=>FilterBloc()),
+          BlocProvider<CategoryBloc>(builder: (ctx)=>CategoryBloc()..dispatch(CategoryInitialize()),)
         ],
         child: CustomScaffold(
           endDrawer: _currentPage == 0 ? FilterDrawer() : null,

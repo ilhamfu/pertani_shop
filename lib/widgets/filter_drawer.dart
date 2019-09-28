@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pertani_shop/bloc/category/bloc/index.dart';
 import 'package:pertani_shop/bloc/filter_bloc/bloc.dart';
 import 'package:pertani_shop/bloc/filter_bloc/index.dart';
 import 'package:pertani_shop/models/product_category.dart';
@@ -46,7 +47,7 @@ class _FilterDrawerState extends State<FilterDrawer> {
                         "max": state.maxPrice,
                         "min": state.minPrice
                       }),
-                      new _CategoryFilter(category: state.category),
+                      _CategoryFilter(category: state.category),
                       new _StarFIlter(star: state.star),
                     ],
                   );
@@ -220,59 +221,66 @@ class _CategoryFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ExpansionTile(
-      title: Text("Kategori"),
-      initiallyExpanded: true,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8.0),
-          child: Wrap(
-            children: [
-              new ProductCategory(id: 0, name: "Padi"),
-              new ProductCategory(id: 1, name: "Jagung"),
-              new ProductCategory(id: 2, name: "Kentang"),
-              new ProductCategory(id: 3, name: "Beras"),
-              new ProductCategory(id: 4, name: "Wortel"),
-            ]
-                .map((element) => Container(
-                      decoration: BoxDecoration(
-                          color: category == element
-                              ? Colors.white
-                              : Color(0xff13DF4C),
-                          border:
-                              Border.all(color: Color(0xff13DF4C), width: 3),
-                          borderRadius: BorderRadius.circular(10)),
-                      margin: EdgeInsets.all(2),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            BlocProvider.of<FilterBloc>(context).dispatch(
-                                FilterSetCategory(
-                                    productCategory:
-                                        element,
-                                    clearCategory: category == element));
-                          },
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 1, horizontal: 6),
-                            child: Text(
-                              element.name,
-                              style: TextStyle(
-                                  color: category != element
-                                      ? Colors.white
-                                      : Color(0xff13DF4C),
-                                  fontSize: ScreenUtil().setSp(12),
-                                  fontWeight: FontWeight.bold),
+    return BlocBuilder<CategoryBloc, CategoryState>(
+      builder: (ctx, state) {
+
+        if ((state is CategoryStatus) &&
+            (state.status == CategoryStatus.CATEGORY_ERROR))
+          return Text("Error While Fetching Category");
+
+        if ((state is CategoryStatus) &&
+            (state.status == CategoryStatus.CATEGORY_FETCHING))
+          return CircularProgressIndicator();
+
+        if (state is CategoryInitialized)
+          return ExpansionTile(
+            title: Text("Kategori"),
+            initiallyExpanded: true,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Wrap(
+                  children: state.category
+                      .map((element) => Container(
+                            decoration: BoxDecoration(
+                                color: category == element
+                                    ? Colors.white
+                                    : Color(0xff13DF4C),
+                                border: Border.all(
+                                    color: Color(0xff13DF4C), width: 3),
+                                borderRadius: BorderRadius.circular(10)),
+                            margin: EdgeInsets.all(2),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  BlocProvider.of<FilterBloc>(context).dispatch(
+                                      FilterSetCategory(
+                                          productCategory: element,
+                                          clearCategory: category == element));
+                                },
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 1, horizontal: 6),
+                                  child: Text(
+                                    element.name,
+                                    style: TextStyle(
+                                        color: category != element
+                                            ? Colors.white
+                                            : Color(0xff13DF4C),
+                                        fontSize: ScreenUtil().setSp(12),
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
-                    ))
-                .toList(),
-          ),
-        )
-      ],
+                          ))
+                      .toList(),
+                ),
+              )
+            ],
+          );
+      },
     );
   }
 }
