@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pertani_shop/bloc/cart/bloc/index.dart';
 import 'package:pertani_shop/models/cart.dart';
 import 'package:pertani_shop/widgets/add_cart_modal.dart';
 import 'package:pertani_shop/widgets/clip_shadow_path.dart';
@@ -19,32 +20,39 @@ class _CartPageState extends State<CartPage> {
       color: Colors.white,
       child: Column(
         children: <Widget>[
-          Expanded(
-              child: ListView.builder(
-            itemCount: 10,
-            itemBuilder: (ctx, index) {
-              return Dismissible(
-                  key: Key("$index"),
-                  direction: DismissDirection.endToStart,
-                  confirmDismiss: (_) async => (await showDialog(
-                          context: context,
-                          builder: (ctx) => CustomYesNoDialog(
-                                yesButtonText: "Hapus Dari Keranjang",
-                                noButtonText: "Batal",
-                                description:
-                                    "Anda yakin ingin membatalkan transaksi?",
-                                title: "Hapus produk $index dari keranjang?",
-                              )) ??
-                      false),
-                  onDismissed: (direction) {},
-                  child: CartItem());
+          BlocBuilder<CartBloc, CartState>(
+            builder: (ctx, state) {
+              if (state is CartInitialized)
+                return Expanded(
+                    child: ListView.builder(
+                  itemCount: state.length,
+                  itemBuilder: (ctx, index) {
+                    return Dismissible(
+                        key: Key("$index"),
+                        direction: DismissDirection.endToStart,
+                        confirmDismiss: (_) async => (await showDialog(
+                                context: context,
+                                builder: (ctx) => CustomYesNoDialog(
+                                      yesButtonText: "Hapus Dari Keranjang",
+                                      noButtonText: "Batal",
+                                      description:
+                                          "Anda yakin ingin membatalkan transaksi?",
+                                      title:
+                                          "Hapus produk $index dari keranjang?",
+                                    )) ??
+                            false),
+                        onDismissed: (direction) {},
+                        child: CartItem(cart: state.carts[index]));
+                  },
+                ));
+              return Container();
             },
-          )),
+          ),
           Container(
             height: ScreenUtil().setHeight(30),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [BoxShadow(color: Colors.green, blurRadius: 2)]),
+            decoration: BoxDecoration(color: Colors.white, boxShadow: [
+              BoxShadow(color: Color(0xff0FC442), blurRadius: 2)
+            ]),
             child: Stack(
               children: <Widget>[
                 ClipShadowPath(
@@ -54,7 +62,7 @@ class _CartPageState extends State<CartPage> {
                       blurRadius: 2),
                   clipper: _MClipper(),
                   child: Container(
-                    decoration: BoxDecoration(color: Colors.green),
+                    decoration: BoxDecoration(color: Color(0xff0FC442)),
                   ),
                 ),
                 Positioned.fill(
@@ -75,7 +83,7 @@ class _CartPageState extends State<CartPage> {
                           Text(
                             "Rp. 0",
                             style: TextStyle(
-                                color: Colors.green,
+                                color: Color(0xff0FC442),
                                 fontWeight: FontWeight.w700,
                                 fontSize: ScreenUtil().setSp(16)),
                           ),
@@ -122,7 +130,7 @@ class CartItem extends StatelessWidget {
             width: ScreenUtil().setWidth(!cart.active ? 40 : 30),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.horizontal(left: Radius.circular(5)),
-                color: cart.active ? Colors.green : Colors.red,
+                color: cart.active ? Color(0xff0FC442) : Colors.red,
                 boxShadow: [
                   BoxShadow(
                       color: Colors.black54,
@@ -132,8 +140,7 @@ class CartItem extends StatelessWidget {
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: () {
-                },
+                onTap: () {},
               ),
             ),
           ),
@@ -151,8 +158,7 @@ class CartItem extends StatelessWidget {
                               product: cart.product,
                             )) ??
                     0;
-                if (amount > 0) {
-                }
+                if (amount > 0) {}
                 // BlocProvider.of<CartBloc>(context).dispatch(AddCart());
               },
               child: Container(
@@ -178,7 +184,7 @@ class CartItem extends StatelessWidget {
                                   decoration: BoxDecoration(
                                 borderRadius: BorderRadius.only(
                                     bottomRight: Radius.circular(5)),
-                                color: Colors.green,
+                                color: Color(0xff0FC442),
                               )),
                               clipper: _MItemClipper(),
                               shadow: Shadow(

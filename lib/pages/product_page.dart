@@ -2,12 +2,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:pertani_shop/bloc/filter_bloc/index.dart';
+import 'package:pertani_shop/bloc/filter_bloc/states.dart';
+import 'package:pertani_shop/bloc/product_list/bloc/index.dart';
 import 'package:pertani_shop/models/product.dart';
 import 'package:pertani_shop/utils/pertani_icon_icons.dart';
 import 'package:pertani_shop/widgets/add_cart_modal.dart';
-import 'package:pertani_shop/widgets/sliver_delegate.dart';
 
 class ProductPage extends StatefulWidget {
   const ProductPage({Key key}) : super(key: key);
@@ -22,7 +25,9 @@ class __HeaderState extends State<_Header> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color(0xff13DF4C),
+      decoration: BoxDecoration(
+          color: Color(0xff13DF4C),
+          boxShadow: [BoxShadow(color: Colors.black38, offset: Offset(0, 2))]),
       child: Row(
         children: <Widget>[
           Expanded(
@@ -32,6 +37,8 @@ class __HeaderState extends State<_Header> {
                 controller: _searchController,
                 maxLines: 1,
                 onSubmitted: (value) {
+                  BlocProvider.of<FilterBloc>(context).dispatch(FilterSetSearch(search: value));
+                  _searchController.text="";
                 },
                 focusNode: searchFocusNode,
                 decoration: InputDecoration(
@@ -153,11 +160,17 @@ class _ProductCard extends StatelessWidget {
                 ),
                 Expanded(
                   child: Container(
-                    color: Color(0xff0FC442),
-                    child: Row(
-                      children: <Widget>[],
-                    ),
-                  ),
+                      width: double.infinity,
+                      color: Color(0xff0FC442),
+                      child: Center(
+                        child: Text(
+                          "Rp. ${product.price}",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )),
                   flex: 3,
                 )
               ],
@@ -170,167 +183,177 @@ class _ProductCard extends StatelessWidget {
 }
 
 class _ProductPageBody extends StatelessWidget {
-  _ProductPageBody({
-    Key key,
-  }) : super(key: key);
+  const _ProductPageBody({Key key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return CustomScrollView(
-      slivers: <Widget>[
-        SliverPersistentHeader(
-            floating: true,
-            delegate: CustomSliverDelegate(
-                child: Container(
-                  child: _Header(),
-                  decoration: BoxDecoration(
-                      boxShadow: [BoxShadow(color: Colors.black38)]),
-                ),
-                maxHeight: ScreenUtil().setHeight(50),
-                minHeight: ScreenUtil().setHeight(50))),
-        SliverPadding(
-          padding: EdgeInsets.all(ScreenUtil().setWidth(10)),
-          sliver:SliverGrid(
-                  delegate: SliverChildBuilderDelegate((ctx, index) {
-                    return _SlidingProductCard(index:index);
-                  }, childCount:5),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      childAspectRatio: 3 / 5,
-                      crossAxisCount: 2,
-                      crossAxisSpacing: ScreenUtil().setWidth(10),
-                      mainAxisSpacing: ScreenUtil().setWidth(10)),
-                )
-              
-        )
-      ],
-    );
-  }
-
-  Widget _buildFilterControl(
-      {BuildContext context, Map<String, dynamic> filter}) {
+  Widget _buildFilterControl({BuildContext ctx, FilterInitialized filter}) {
     List<Map<String, dynamic>> _filterString = [];
-    if ((filter["search"] ?? "") != "") {
+    if ((filter.search ?? "") != "") {
       _filterString.add({
-        "text": 'Nama "${filter["search"]}"',
+        "text": 'Nama "${filter.search}"',
         "tap": () {
+          BlocProvider.of<FilterBloc>(ctx).dispatch(FilterSetSearch(search: ""));
         }
       });
     }
-    if ((filter["category"]?.id ?? -1) > -1) {
+    if ((filter.category?.id ?? -1) > -1) {
       _filterString.add({
-        "text": 'Category "${filter["category"].name}"',
+        "text": 'Category "${filter.category.name}"',
         "tap": () {
-        }
-      });
-    }
-
-    if ((filter["star"] ?? 0) > 0) {
-      _filterString.add({
-        "text": 'Rating: ${filter["star"]} ke atas',
-        "tap": () {
+          BlocProvider.of<FilterBloc>(ctx).dispatch(FilterSetCategory(
+              productCategory: filter.category, clearCategory: true));
         }
       });
     }
 
-    if (filter["price"]["min"] >= 0) {
-      if (filter["price"]["max"] >= 0)
+    if ((filter.star ?? 0) > 0) {
+      _filterString.add({
+        "text": 'Rating: ${filter.star} ke atas',
+        "tap": () {
+          BlocProvider.of<FilterBloc>(ctx).dispatch(FilterSetStar(star: 0));
+        }
+      });
+    }
+
+    if ((filter.minPrice ?? -1) >= 0) {
+      if ((filter.maxPrice ?? -1) >= 0)
         _filterString.add({
-          "text":
-              'Harga: antara ${filter["price"]["min"]} sampai ${filter["price"]["max"]}',
+          "text": 'Harga: antara ${filter.minPrice} sampai ${filter.maxPrice}',
           "tap": () {
+            BlocProvider.of<FilterBloc>(ctx)
+                .dispatch(FilterSetPrice(maxPrice: -1, minPrice: -1));
           }
         });
       else
         _filterString.add({
-          "text": 'Harga: lebih dari ${filter["price"]["min"]}',
+          "text": 'Harga: lebih dari ${filter.minPrice}',
           "tap": () {
-            // Empty max
+            BlocProvider.of<FilterBloc>(ctx).dispatch(
+                FilterSetPrice(maxPrice: filter.maxPrice, minPrice: -1));
           }
         });
     } else {
-      if (filter["price"]["max"] >= 0)
+      if ((filter.maxPrice ?? -1) >= 0)
         _filterString.add({
-          "text": 'Harga: kurang dari ${filter["price"]["max"]}',
+          "text": 'Harga: kurang dari ${filter.maxPrice}',
           "tap": () {
-            // Empty max
+            BlocProvider.of<FilterBloc>(ctx).dispatch(
+                FilterSetPrice(maxPrice: -1, minPrice: filter.minPrice));
           }
         });
     }
 
     return _filterString.length == 0
-        ? SliverToBoxAdapter(
-            child: Container(),
-          )
-        : SliverPersistentHeader(
-            pinned: true,
-            delegate: CustomSliverDelegate(
-                child: Container(
-                  child: ListView.separated(
-                    padding: EdgeInsets.symmetric(
-                        vertical: ScreenUtil().setWidth(5),
-                        horizontal: ScreenUtil().setWidth(5)),
-                    scrollDirection: Axis.horizontal,
-                    separatorBuilder: (context, index) {
-                      return SizedBox(
-                        width: ScreenUtil().setWidth(5),
-                      );
-                    },
-                    itemCount: _filterString.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.black54,
-                                  blurRadius: 1,
-                                  offset: Offset(1, 1))
-                            ]),
-                        child: Material(
-                          borderRadius: BorderRadius.circular(5),
-                          child: InkWell(
-                            onTap: () {
-                              _filterString[index]["tap"]();
-                            },
-                            splashColor: Color(0xff0FC442),
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: ScreenUtil().setWidth(5)),
-                              child: Center(
-                                  child: Text(
-                                _filterString[index]["text"],
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              )),
-                            ),
-                          ),
-                          color: Color(0xff0FC442),
-                        ),
-                      );
-                    },
-                  ),
+        ? Container()
+        : Container(
+            decoration: BoxDecoration(boxShadow: [
+              BoxShadow(
+                  color: Colors.black38, offset: Offset(0, 2), blurRadius: 5)
+            ], color: Colors.white),
+            height: ScreenUtil().setHeight(30),
+            child: ListView.separated(
+              padding: EdgeInsets.symmetric(
+                  vertical: ScreenUtil().setWidth(5),
+                  horizontal: ScreenUtil().setWidth(5)),
+              scrollDirection: Axis.horizontal,
+              separatorBuilder: (context, index) {
+                return SizedBox(
+                  width: ScreenUtil().setWidth(5),
+                );
+              },
+              itemCount: _filterString.length,
+              itemBuilder: (context, index) {
+                return Container(
                   decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: [BoxShadow(color: Colors.black38)]),
-                ),
-                maxHeight: ScreenUtil().setHeight(30),
-                minHeight: ScreenUtil().setHeight(30)),
-          );
+                      borderRadius: BorderRadius.circular(5),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black54,
+                            blurRadius: 1,
+                            offset: Offset(1, 1))
+                      ]),
+                  child: Material(
+                    borderRadius: BorderRadius.circular(5),
+                    child: InkWell(
+                      onTap: () {
+                        _filterString[index]["tap"]();
+                      },
+                      splashColor: Color(0xff0FC442),
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: ScreenUtil().setWidth(5)),
+                        child: Center(
+                            child: Text(
+                          _filterString[index]["text"],
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        )),
+                      ),
+                    ),
+                    color: Color(0xff0FC442),
+                  ),
+                );
+              },
+            ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Container(child: _Header(), height: ScreenUtil().setHeight(50)),
+          BlocBuilder<FilterBloc, FilterState>(
+              builder: (ctx, state) => (state is FilterInitialized)
+                  ? _buildFilterControl(ctx: ctx, filter: state)
+                  : Container()),
+          BlocBuilder<ProductListBloc, ProductListState>(
+            builder: (ctx, state) {
+              if ((state is ProductListStatus) &&
+                  (state.status == ProductListStatus.PRODUCT_LIST_FETCHING))
+                return Container(
+                  height: 100,
+                  width: 100,
+                  child: CircularProgressIndicator(),
+                );
+              if (state is ProductListInitialized)
+                return Expanded(
+                    child: Padding(
+                        padding: EdgeInsets.all(ScreenUtil().setWidth(10)),
+                        child: GridView.builder(
+                          itemCount: state.length,
+                          itemBuilder: (ctx, index) => _SlidingProductCard(
+                            index: index,
+                            product: state.product[index],
+                          ),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  childAspectRatio: 3 / 5,
+                                  mainAxisSpacing: ScreenUtil().setWidth(10),
+                                  crossAxisSpacing: ScreenUtil().setWidth(10)),
+                        )));
+              return Container();
+            },
+          ),
+        ],
+      ),
+    );
   }
 }
 
 class _ProductPageState extends State<ProductPage> {
   @override
-  @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
-      child: Container(
-        color: Colors.white,
-        child: new _ProductPageBody(),
+    return BlocProvider<ProductListBloc>(
+      builder: (ctx) => ProductListBloc()..dispatch(ProductListInitialize()),
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Container(
+          color: Colors.white,
+          child: new _ProductPageBody(),
+        ),
       ),
     );
   }
@@ -386,7 +409,6 @@ class _SlidingProductCard extends StatelessWidget {
                                       top: Radius.circular(10))))) ??
                           0;
                       if (amount == 0) return;
-
                     },
                   ),
                 ]

@@ -39,7 +39,7 @@ class _FilterDrawerState extends State<FilterDrawer> {
             ),
             BlocBuilder<FilterBloc, FilterState>(
               builder: (ctx, state) {
-                print(state);
+                
                 if (state is FilterInitialized)
                   return Column(
                     children: <Widget>[
@@ -71,7 +71,7 @@ class _PriceFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(price);
+    
     return ExpansionTile(
       title: Text("Harga"),
       initiallyExpanded: true,
@@ -157,7 +157,7 @@ class _StarFIlter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(star);
+    
     return ExpansionTile(
       title: Text("Rating"),
       initiallyExpanded: true,

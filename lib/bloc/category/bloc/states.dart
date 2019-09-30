@@ -19,8 +19,8 @@ class CategoryInitialized extends CategoryState {
 class CategoryStatus extends CategoryState {
   final int status;
 
-  static int CATEGORY_FETCHING = 0;
-  static int CATEGORY_ERROR = 1;
+  static const int CATEGORY_FETCHING = 0;
+  static const int CATEGORY_ERROR = 1;
 
   CategoryStatus({this.status});
 }

@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:pertani_shop/bloc/category/bloc/index.dart';
 import 'package:pertani_shop/bloc/category/repository/api_client.dart';
-import 'package:pertani_shop/models/product_category.dart';
 
 class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
 

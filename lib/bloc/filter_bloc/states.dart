@@ -33,10 +33,10 @@ class FilterInitialized extends FilterState {
   factory FilterInitialized.empty() {
     return FilterInitialized(
       category: null,
-      search: "",
-      star: 0,
-      maxPrice: 0,
-      minPrice: 0,
+      search: null,
+      star: null,
+      maxPrice: null,
+      minPrice: null,
     );
   }
 }

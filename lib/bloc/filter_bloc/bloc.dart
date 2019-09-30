@@ -4,13 +4,7 @@ import 'package:bloc/bloc.dart';
 
 class FilterBloc extends Bloc<FilterEvent, FilterState> {
   @override
-  FilterState get initialState => FilterInitialized(
-        category: null,
-        maxPrice: 0,
-        minPrice: 0,
-        search: "",
-        star: 0,
-      );
+  FilterState get initialState => FilterInitialized.empty();
 
   @override
   Stream<FilterState> mapEventToState(FilterEvent event) async* {
@@ -21,22 +15,12 @@ class FilterBloc extends Bloc<FilterEvent, FilterState> {
       yield FilterInitialized.fromInitialized(currentState,
           maxPrice: event.maxPrice, minPrice: event.minPrice);
     } else if (event is FilterSetStar) {
-      var newState = FilterInitialized.fromInitialized(currentState, star: event.star);
-      print(currentState==newState);
-      print((currentState as FilterInitialized).star);
-      print(newState.star);
-      yield newState;
+      yield FilterInitialized.fromInitialized(currentState, star: event.star);
     } else if (event is FilterSetSearch) {
       yield FilterInitialized.fromInitialized(currentState,
           search: event.search);
     } else if (event is FilterClear) {
-      yield FilterInitialized(
-        category: null,
-        maxPrice: 0,
-        minPrice: 0,
-        search: "",
-        star: 0,
-      );
+      yield FilterInitialized.empty();
     }
   }
 }

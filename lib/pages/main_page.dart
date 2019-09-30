@@ -3,7 +3,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pertani_shop/utils/pertani_icon_icons.dart';
 
-import 'package:pertani_shop/widgets/sliver_delegate.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key key}) : super(key: key);
