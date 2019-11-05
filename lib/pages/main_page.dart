@@ -3,7 +3,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pertani_shop/utils/pertani_icon_icons.dart';
 
-
 class MainPage extends StatefulWidget {
   MainPage({Key key}) : super(key: key);
 
@@ -39,12 +38,11 @@ class _MainPageState extends State<MainPage> {
                 ),
               ),
               SliverGrid(
-                delegate: SliverChildBuilderDelegate((ctx, index) {
-                  print(index.toString());
-                  return _ProductItem(
-                    index: index,
-                  );
-                }, childCount: 100),
+                delegate: SliverChildBuilderDelegate(
+                    (ctx, index) => _ProductItem(
+                          index: index,
+                        ),
+                    childCount: 100),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     childAspectRatio: 0.75,
                     mainAxisSpacing: 10,
@@ -128,7 +126,7 @@ class _CustomAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: kToolbarHeight,
+      height: ScreenUtil().setHeight(50),
       decoration: BoxDecoration(
           color: Color(0xff13DF4C),
           boxShadow: [BoxShadow(color: Colors.black38, blurRadius: 5)]),

@@ -394,6 +394,7 @@ class _SlidingProductCard extends StatelessWidget {
                   ),
                   IconSlideAction(
                     color: Color(0xff0FC442),
+                    foregroundColor: Colors.white,
                     icon: Icons.add_shopping_cart,
                     onTap: () async {
                       var amount = (await showModalBottomSheet<int>(
@@ -423,6 +424,7 @@ class _SlidingProductCard extends StatelessWidget {
               ? <Widget>[
                   IconSlideAction(
                     color: Color(0xff0FC442),
+                    foregroundColor: Colors.white,
                     icon: Icons.add_shopping_cart,
                     onTap: () async {
                       var amount = await showModalBottomSheet<int>(

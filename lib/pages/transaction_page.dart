@@ -125,7 +125,8 @@ class _TransactionOnProcess extends StatelessWidget {
                     Text(
                         "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}",
                         style: TextStyle(
-                            color: Colors.green, fontWeight: FontWeight.bold)),
+                            color: Color(0xff13DF4C),
+                            fontWeight: FontWeight.bold)),
                     SizedBox(
                       height: 1,
                       width: ScreenUtil().setWidth(130),
@@ -145,7 +146,8 @@ class _TransactionOnProcess extends StatelessWidget {
                     ),
                     Text("Diproses",
                         style: TextStyle(
-                            color: Colors.green, fontWeight: FontWeight.bold)),
+                            color: Color(0xff13DF4C),
+                            fontWeight: FontWeight.bold)),
                     SizedBox(
                       height: 1,
                       width: ScreenUtil().setWidth(130),
@@ -170,7 +172,7 @@ class _TransactionOnProcess extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: Text("7c3c7b7f-1458-4e39-9336-3681c246be8e",
                 style: TextStyle(
-                    color: Colors.green, fontWeight: FontWeight.bold)),
+                    color: Color(0xff13DF4C), fontWeight: FontWeight.bold)),
           ),
           Align(
               alignment: Alignment.centerRight,
@@ -193,7 +195,7 @@ class _TransactionOnProcess extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: Text("Rp. 200000",
                 style: TextStyle(
-                    color: Colors.green, fontWeight: FontWeight.bold)),
+                    color: Color(0xff13DF4C), fontWeight: FontWeight.bold)),
           ),
           Align(
               alignment: Alignment.centerRight,
@@ -275,7 +277,9 @@ class _TransactionHistoryitem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: ScreenUtil().setHeight(3),horizontal: ScreenUtil().setWidth(3)),
+      margin: EdgeInsets.symmetric(
+          vertical: ScreenUtil().setHeight(3),
+          horizontal: ScreenUtil().setWidth(3)),
       decoration: BoxDecoration(boxShadow: [
         BoxShadow(color: Colors.black38, blurRadius: 3, offset: Offset(2, 2))
       ], color: Colors.white, borderRadius: BorderRadius.circular(3)),
@@ -285,7 +289,8 @@ class _TransactionHistoryitem extends StatelessWidget {
             clipper: _MHistoryClipper(),
             child: Container(
               decoration: BoxDecoration(
-                  color: Colors.green, borderRadius: BorderRadius.circular(3)),
+                  color: Color(0xff13DF4C),
+                  borderRadius: BorderRadius.circular(3)),
               height: 30,
             ),
           ),
@@ -305,7 +310,7 @@ class _TransactionHistoryitem extends StatelessWidget {
                   Text(
                     "Not Accepted",
                     style: TextStyle(
-                        color: Colors.green, fontWeight: FontWeight.w700),
+                        color: Color(0xff13DF4C), fontWeight: FontWeight.w700),
                   )
                 ],
               ),
@@ -397,7 +402,7 @@ class _TransactionNotProcess extends StatelessWidget {
             child: Text(
                 "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}",
                 style: TextStyle(
-                    color: Colors.green, fontWeight: FontWeight.bold)),
+                    color: Color(0xff13DF4C), fontWeight: FontWeight.bold)),
           ),
           Align(
               alignment: Alignment.centerRight,
@@ -420,7 +425,7 @@ class _TransactionNotProcess extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: Text("7c3c7b7f-1458-4e39-9336-3681c246be8e",
                 style: TextStyle(
-                    color: Colors.green, fontWeight: FontWeight.bold)),
+                    color: Color(0xff13DF4C), fontWeight: FontWeight.bold)),
           ),
           Align(
               alignment: Alignment.centerRight,
@@ -443,7 +448,7 @@ class _TransactionNotProcess extends StatelessWidget {
             alignment: Alignment.centerRight,
             child: Text("Rp. 200000",
                 style: TextStyle(
-                    color: Colors.green, fontWeight: FontWeight.bold)),
+                    color: Color(0xff13DF4C), fontWeight: FontWeight.bold)),
           ),
           Align(
               alignment: Alignment.centerRight,
@@ -497,7 +502,7 @@ class _TrasactionProductItem extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(vertical: ScreenUtil().setHeight(3)),
       decoration: BoxDecoration(
-          border: Border.all(color: Colors.green, width: 2),
+          border: Border.all(color: Color(0xff13DF4C), width: 2),
           color: Colors.white,
           boxShadow: [
             BoxShadow(
@@ -510,7 +515,7 @@ class _TrasactionProductItem extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () {},
-          splashColor: Colors.green,
+          splashColor: Color(0xff13DF4C),
           borderRadius: BorderRadius.circular(5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -521,7 +526,7 @@ class _TrasactionProductItem extends StatelessWidget {
                     EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(3)),
                 child: Text("Produk 1",
                     style: TextStyle(
-                        color: Colors.green,
+                        color: Color(0xff13DF4C),
                         fontSize: ScreenUtil().setSp(16),
                         fontWeight: FontWeight.w700)),
               ),
@@ -531,7 +536,7 @@ class _TrasactionProductItem extends StatelessWidget {
                     child: ClipPath(
                       clipper: _MProductClipper(),
                       child: Container(
-                        color: Colors.green,
+                        color: Color(0xff13DF4C),
                       ),
                     ),
                   ),
@@ -571,7 +576,44 @@ class _TransactionFinished extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return ListView.separated(
+      padding: EdgeInsets.symmetric(vertical: ScreenUtil().setWidth(10)),
+      itemCount: 20,
+      separatorBuilder: (ctx, _) => SizedBox(
+        height: 10,
+      ),
+      itemBuilder: (Ctx, index) => Container(
+        decoration: BoxDecoration(color: Colors.white, boxShadow: [
+          BoxShadow(color: Colors.black38, blurRadius: 5, offset: Offset(0, 2))
+        ]),
+        height: ScreenUtil().setWidth(150),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            Container(
+              color: Colors.green,
+              width: 40,
+            ),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.all(ScreenUtil().setWidth(10)),
+                color: Colors.white,
+                child: Column(children: <Widget>[
+                  Container(child: Text("No Transaksi",textAlign: TextAlign.left,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold),),width: double.infinity,),
+                  Container(child: Text("8989-2831-1233-3444",textAlign: TextAlign.right,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold,color: Colors.green)),width: double.infinity,),
+                  Container(child: Text("Tanggal Pemesanan",textAlign: TextAlign.left,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold),),width: double.infinity,),
+                  Container(child: Text("08 Februari 2019",textAlign: TextAlign.right,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold,color: Colors.green),),width: double.infinity,),
+                  Container(child: Text("Tanggal Terima",textAlign: TextAlign.left,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold),),width: double.infinity,),
+                  Container(child: Text("10 Februari 2019",textAlign: TextAlign.right,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold,color: Colors.green),),width: double.infinity,),
+                  Container(child: Text("Total",textAlign: TextAlign.left,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold),),width: double.infinity,),
+                  Container(child: Text("Rp. 200000",textAlign: TextAlign.right,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold,color: Colors.green),),width: double.infinity,),
+                ],)
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -580,7 +622,44 @@ class _TransactionCanceled extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return ListView.separated(
+      padding: EdgeInsets.symmetric(vertical: ScreenUtil().setWidth(10)),
+      itemCount: 20,
+      separatorBuilder: (ctx, _) => SizedBox(
+        height: 10,
+      ),
+      itemBuilder: (Ctx, index) => Container(
+        decoration: BoxDecoration(color: Colors.white, boxShadow: [
+          BoxShadow(color: Colors.black38, blurRadius: 5, offset: Offset(0, 2))
+        ]),
+        height: ScreenUtil().setWidth(150),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            Container(
+              color: Colors.red,
+              width: 40,
+            ),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.all(ScreenUtil().setWidth(10)),
+                color: Colors.white,
+                child: Column(children: <Widget>[
+                  Container(child: Text("No Transaksi",textAlign: TextAlign.left,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold),),width: double.infinity,),
+                  Container(child: Text("8989-2831-1233-3444",textAlign: TextAlign.right,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold,color: Colors.red)),width: double.infinity,),
+                  Container(child: Text("Tanggal Pemesanan",textAlign: TextAlign.left,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold),),width: double.infinity,),
+                  Container(child: Text("08 Februari 2019",textAlign: TextAlign.right,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold,color: Colors.red),),width: double.infinity,),
+                  Container(child: Text("Tanggal Terima",textAlign: TextAlign.left,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold),),width: double.infinity,),
+                  Container(child: Text("10 Februari 2019",textAlign: TextAlign.right,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold,color: Colors.red),),width: double.infinity,),
+                  Container(child: Text("Total",textAlign: TextAlign.left,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold),),width: double.infinity,),
+                  Container(child: Text("Rp. 200000",textAlign: TextAlign.right,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold,color: Colors.red),),width: double.infinity,),
+                ],)
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -604,7 +683,7 @@ class __CustomNavigatorState extends State<_CustomNavigator> {
     var w = MediaQuery.of(context).size.width / (widget.pages.length + 2);
     return Container(
       height: ScreenUtil().setHeight(50),
-      color: Colors.green,
+      color: Color(0xff13DF4C),
       child: Row(
           children: widget.pages
               .asMap()
@@ -646,14 +725,14 @@ class _NavigatorButton extends StatelessWidget {
           AnimatedContainer(
             duration: Duration(milliseconds: 250),
             curve: Curves.easeIn,
-            color: active ? Colors.white : Colors.green,
+            color: active ? Colors.white : Color(0xff13DF4C),
             width: double.maxFinite,
             height: double.maxFinite,
             child: Material(
               color: Colors.transparent,
               child: InkWell(
                 onTap: active ? null : changePage,
-                splashColor: Colors.green,
+                splashColor: Color(0xff13DF4C),
                 child: Visibility(
                     visible: active,
                     replacement: Icon(
@@ -664,7 +743,8 @@ class _NavigatorButton extends StatelessWidget {
                         child: Text(
                       page["label"],
                       style: TextStyle(
-                          color: Colors.green, fontWeight: FontWeight.w700),
+                          color: Color(0xff13DF4C),
+                          fontWeight: FontWeight.w700),
                     ))),
               ),
             ),
@@ -673,7 +753,7 @@ class _NavigatorButton extends StatelessWidget {
             child: AnimatedContainer(
               duration: Duration(milliseconds: 250),
               curve: Curves.easeIn,
-              color: active ? Colors.green : Colors.orange,
+              color: active ? Color(0xff13DF4C) : Colors.orange,
               height: 5,
               width: double.maxFinite,
             ),

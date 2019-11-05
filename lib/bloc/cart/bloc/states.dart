@@ -11,6 +11,7 @@ class CartInitialized extends CartState {
   final List<Cart> carts;
 
   get length => carts.length;
+  get total => carts.fold(0,(temp,data)=>temp+data.total);
   get empty => carts.length == 0;
 
   CartInitialized({this.carts}) : super([carts]);

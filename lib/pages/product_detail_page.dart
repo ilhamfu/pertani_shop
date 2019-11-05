@@ -59,17 +59,18 @@ class __ProductDetailBodyState extends State<_ProductDetailBody> {
       slivers: <Widget>[
         SliverPersistentHeader(
           delegate: CustomSliverDelegate(
-            maxHeight: ScreenUtil().setHeight(30),
-            minHeight: ScreenUtil().setHeight(30),
+            maxHeight: ScreenUtil().setHeight(50),
+            minHeight: ScreenUtil().setHeight(50),
             child: Container(
               decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Color(0xFF13DF4C),
                   boxShadow: [
-                    BoxShadow(color: Colors.black, blurRadius: 3),
+                    BoxShadow(color: Colors.black38, blurRadius: 3),
                   ],
                   border: Border(
                     bottom: BorderSide(
-                        color: Colors.green, width: ScreenUtil().setWidth(2)),
+                        color: Color(0xFF13DF4C),
+                        width: ScreenUtil().setWidth(2)),
                   )),
             ),
           ),
@@ -117,8 +118,8 @@ class __ProductDetailBodyState extends State<_ProductDetailBody> {
         SliverPersistentHeader(
           pinned: true,
           delegate: CustomSliverDelegate(
-              maxHeight: ScreenUtil().setHeight(40),
-              minHeight: ScreenUtil().setHeight(40),
+              maxHeight: ScreenUtil().setHeight(50),
+              minHeight: ScreenUtil().setHeight(50),
               child: _buildHeader(name: widget.product.name)),
         ),
         SliverToBoxAdapter(
@@ -178,28 +179,28 @@ class __ProductDetailBodyState extends State<_ProductDetailBody> {
         SliverPersistentHeader(
           pinned: true,
           delegate: CustomSliverDelegate(
-              maxHeight: ScreenUtil().setHeight(40),
-              minHeight: ScreenUtil().setHeight(40),
+              maxHeight: ScreenUtil().setHeight(50),
+              minHeight: ScreenUtil().setHeight(50),
               child: Container(
                 padding:
                     EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(5)),
                 decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Color(0xFF13DF4C),
                     boxShadow: [
-                      BoxShadow(color: Colors.black, blurRadius: 3),
+                      BoxShadow(color: Color(0xFF13DF4C), blurRadius: 3),
                     ],
                     border: Border(
                       top: BorderSide(
-                          color: Colors.green, width: ScreenUtil().setWidth(2)),
+                          color: Color(0xFF13DF4C), width: ScreenUtil().setWidth(2)),
                       bottom: BorderSide(
-                          color: Colors.green, width: ScreenUtil().setWidth(2)),
+                          color: Color(0xFF13DF4C), width: ScreenUtil().setWidth(2)),
                     )),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     "Deskripsi",
                     style: TextStyle(
-                        color: Colors.orange,
+                        color: Colors.white,
                         fontWeight: FontWeight.w700,
                         fontSize: ScreenUtil().setSp(15)),
                   ),
@@ -225,15 +226,15 @@ class __ProductDetailBodyState extends State<_ProductDetailBody> {
                 padding:
                     EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(5)),
                 decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Color(0xFF13DF4C),
                     boxShadow: [
-                      BoxShadow(color: Colors.black, blurRadius: 3),
+                      BoxShadow(color: Colors.white, blurRadius: 3),
                     ],
                     border: Border(
                       top: BorderSide(
-                          color: Colors.green, width: ScreenUtil().setWidth(2)),
+                          color: Color(0xFF13DF4C), width: ScreenUtil().setWidth(2)),
                       bottom: BorderSide(
-                          color: Colors.green, width: ScreenUtil().setWidth(2)),
+                          color: Color(0xFF13DF4C), width: ScreenUtil().setWidth(2)),
                     )),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -241,7 +242,7 @@ class __ProductDetailBodyState extends State<_ProductDetailBody> {
                     Text(
                       "Testimoni",
                       style: TextStyle(
-                          color: Colors.orange,
+                          color: Colors.white,
                           fontWeight: FontWeight.w700,
                           fontSize: ScreenUtil().setSp(15)),
                     ),
@@ -250,13 +251,13 @@ class __ProductDetailBodyState extends State<_ProductDetailBody> {
                         Text(
                           widget.product.avgRate.toStringAsPrecision(1),
                           style: TextStyle(
-                              color: Colors.orange,
+                              color: Colors.white,
                               fontWeight: FontWeight.w700,
                               fontSize: ScreenUtil().setSp(15)),
                         ),
                         Icon(
                           Icons.star,
-                          color: Colors.orange,
+                          color: Colors.white,
                           size: ScreenUtil().setWidth(17),
                         )
                       ],
@@ -418,22 +419,22 @@ class __ProductDetailBodyState extends State<_ProductDetailBody> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(5)),
       decoration: BoxDecoration(
-          color: Colors.white,
+          color: Color(0xFF13DF4C),
           boxShadow: [
-            BoxShadow(color: Colors.black, blurRadius: 3),
+            BoxShadow(color: Color(0xFF13DF4C), blurRadius: 3),
           ],
           border: Border(
               top: BorderSide(
-                  color: Colors.green, width: ScreenUtil().setWidth(2)),
+                  color: Color(0xFF13DF4C), width: ScreenUtil().setWidth(2)),
               bottom: BorderSide(
-                  color: Colors.green, width: ScreenUtil().setWidth(2)))),
+                  color: Color(0xFF13DF4C), width: ScreenUtil().setWidth(2)))),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Text(
             name,
             style: TextStyle(
-                color: Colors.orange,
+                color: Colors.white,
                 fontWeight: FontWeight.w700,
                 fontSize: ScreenUtil().setSp(15)),
           ),
@@ -445,16 +446,16 @@ class __ProductDetailBodyState extends State<_ProductDetailBody> {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
                     border: Border.all(
-                        color: Colors.orange, width: ScreenUtil().setWidth(2))),
+                        color: Colors.white, width: ScreenUtil().setWidth(2))),
                 child: Material(
-                  color: Colors.white,
+                  color: Color(0xFF13DF4C),
                   child: InkWell(
                     onTap: () {},
-                    splashColor: Colors.orange,
+                    splashColor: Colors.white,
                     child: Icon(
                       Icons.chat,
                       size: ScreenUtil().setWidth(20),
-                      color: Colors.orange,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -466,11 +467,12 @@ class __ProductDetailBodyState extends State<_ProductDetailBody> {
                 width: ScreenUtil().setWidth(30),
                 height: ScreenUtil().setWidth(30),
                 decoration: BoxDecoration(
+                    color: Color(0xFF13DF4C),
                     borderRadius: BorderRadius.circular(5),
                     border: Border.all(
-                        color: Colors.orange, width: ScreenUtil().setWidth(2))),
+                        color: Colors.white, width: ScreenUtil().setWidth(2))),
                 child: Material(
-                  color: Colors.white,
+                  color: Colors.transparent,
                   child: InkWell(
                     onTap: () {
                       showModalBottomSheet(
@@ -485,11 +487,11 @@ class __ProductDetailBodyState extends State<_ProductDetailBody> {
                               borderRadius: BorderRadius.vertical(
                                   top: Radius.circular(10))));
                     },
-                    splashColor: Colors.orange,
+                    splashColor: Colors.white,
                     child: Icon(
                       Icons.add_shopping_cart,
                       size: ScreenUtil().setWidth(20),
-                      color: Colors.orange,
+                      color: Colors.white,
                     ),
                   ),
                 ),

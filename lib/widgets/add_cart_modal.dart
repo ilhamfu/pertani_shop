@@ -125,7 +125,7 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
                             Text(
                               "${widget.product.name}",
                               style: TextStyle(
-                                  color: Colors.green,
+                                  color: Color(0xFF13DF4C),
                                   fontWeight: FontWeight.bold,
                                   fontSize: ScreenUtil().setSp(18)),
                             ),
@@ -171,14 +171,14 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
                                     children: <Widget>[
                                       Text("Total",
                                           style: TextStyle(
-                                              color: Colors.green,
+                                              color: Color(0xFF13DF4C),
                                               fontWeight: FontWeight.bold,
                                               fontSize:
                                                   ScreenUtil().setSp(15))),
                                       Text(
                                           "Rp. ${_amount * widget.product.price}",
                                           style: TextStyle(
-                                              color: Colors.green,
+                                              color: Color(0xFF13DF4C),
                                               fontWeight: FontWeight.bold,
                                               fontSize: ScreenUtil().setSp(15)))
                                     ],
@@ -220,7 +220,7 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
                     width: ScreenUtil().setWidth(180),
                     height: ScreenUtil().setHeight(50),
                     child: Material(
-                      color: _amount >= 1 ? Colors.green : Colors.grey,
+                      color: _amount >= 1 ? Color(0xFF13DF4C) : Colors.grey,
                       child: InkWell(
                         onTap: _amount >= 1
                             ? () {

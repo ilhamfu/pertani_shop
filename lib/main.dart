@@ -14,6 +14,7 @@ import 'package:pertani_shop/pages/register_page.dart';
 import 'package:pertani_shop/pages/transaction_page.dart';
 import 'package:pertani_shop/pages/user_page.dart';
 import 'package:pertani_shop/utils/pertani_icon_icons.dart';
+import 'package:pertani_shop/widgets/create_transaction_drawer.dart';
 import 'package:pertani_shop/widgets/custom_scaffold.dart';
 import 'package:pertani_shop/widgets/filter_drawer.dart';
 
@@ -113,7 +114,7 @@ class _HomePageState extends State<HomePage> {
           BlocProvider<CartBloc>(builder: (ctx)=>CartBloc()..dispatch(CartFetch()),)
         ],
         child: CustomScaffold(
-          endDrawer: _currentPage == 0 ? FilterDrawer() : null,
+          endDrawer: _currentPage == 0 ? FilterDrawer() : _currentPage==1?CreateTransactionDrawer():null,
           bottomNavigationBar: _CustomBottomNavigationBar(
             currentIndex: _currentPage,
             changePage: _changePage,

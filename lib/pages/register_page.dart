@@ -271,7 +271,7 @@ class __ProfilePageState extends State<_ProfilePage> {
                     height: 3,
                     margin: EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(color: primaryColor, boxShadow: [
-                      BoxShadow(color: primaryColor, blurRadius: 5)
+                      BoxShadow(color: primaryColor)
                     ]),
                   ),
                   _CustomTextField(
@@ -302,7 +302,7 @@ class __ProfilePageState extends State<_ProfilePage> {
                     height: 3,
                     margin: EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(color: primaryColor, boxShadow: [
-                      BoxShadow(color: primaryColor, blurRadius: 5)
+                      BoxShadow(color: primaryColor)
                     ]),
                   ),
                   _CustomTextField(
