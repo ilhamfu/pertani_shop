@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pertani_shop/pages/chat_page.dart';
 import 'package:pertani_shop/utils/pertani_icon_icons.dart';
 
 class MainPage extends StatefulWidget {
@@ -152,13 +153,13 @@ class _CustomAppBar extends StatelessWidget {
               ),
             ),
           ),
-          _buildButton(),
+          _buildButton(context: context),
         ],
       ),
     );
   }
 
-  Row _buildButton() {
+  Row _buildButton({@required BuildContext context}) {
     return Row(children: <Widget>[
       Container(
         decoration: BoxDecoration(color: Color(0xff0FC442), boxShadow: [
@@ -175,7 +176,9 @@ class _CustomAppBar extends StatelessWidget {
             color: Colors.transparent,
             child: InkWell(
                 splashColor: Colors.white,
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=>ChatPage(),fullscreenDialog: true));
+                },
                 child: Icon(
                   PertaniIcon.chat,
                   color: Colors.white,

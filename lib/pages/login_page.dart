@@ -238,7 +238,6 @@ class _LoginControl extends StatefulWidget {
 }
 
 class __LoginControlState extends State<_LoginControl> {
-  GlobalKey<FormState> _form = new GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Padding(

@@ -280,6 +280,7 @@ class _CategoryFilter extends StatelessWidget {
               )
             ],
           );
+          return Container();
       },
     );
   }

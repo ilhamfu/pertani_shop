@@ -105,7 +105,6 @@ class KTPPicturePage extends StatefulWidget {
 
 class _KTPPicturePageState extends State<KTPPicturePage> {
   File _image;
-  Future _imageFuture;
 
   Future getImage(ImageSource source) async {
     var image = await ImagePicker.pickImage(source: source);

@@ -30,4 +30,8 @@ class PertaniIcon {
   static const IconData facebook = const IconData(0xe807, fontFamily: _kFontFam);
   static const IconData twitter = const IconData(0xe808, fontFamily: _kFontFam);
   static const IconData filter_filled_tool_symbol = const IconData(0xe809, fontFamily: _kFontFam);
+  static const IconData delivery_truck = const IconData(0xe80a, fontFamily: _kFontFam);
+  static const IconData business = const IconData(0xe80b, fontFamily: _kFontFam);
+  static const IconData completed = const IconData(0xe80c, fontFamily: _kFontFam);
+  static const IconData confirmation = const IconData(0xe80e, fontFamily: _kFontFam);
 }

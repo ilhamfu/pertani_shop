@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pertani_shop/utils/pertani_icon_icons.dart';
 import 'package:pertani_shop/widgets/custom_dialog.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -11,10 +12,10 @@ class TransactionPage extends StatefulWidget {
 
 class _TransactionPageState extends State<TransactionPage> {
   final pages = [
-    {"label": "Perlu Konfirmasi", "icon": Icons.event_note},
-    {"label": "Dalam Proses", "icon": Icons.directions_run},
-    {"label": "Selesai", "icon": Icons.call_end},
-    {"label": "Dibatalkan", "icon": Icons.cancel}
+    {"label": "Perlu Konfirmasi", "icon": PertaniIcon.confirmation},
+    {"label": "Dalam Proses", "icon": PertaniIcon.delivery_truck},
+    {"label": "Selesai", "icon": PertaniIcon.completed},
+    {"label": "Dibatalkan", "icon": PertaniIcon.business}
   ];
   PageController controller = PageController(initialPage: 0);
   int currentPage = 0;
@@ -582,16 +583,16 @@ class _TransactionFinished extends StatelessWidget {
       separatorBuilder: (ctx, _) => SizedBox(
         height: 10,
       ),
-      itemBuilder: (Ctx, index) => Container(
+      itemBuilder: (ctx, index) => Container(
         decoration: BoxDecoration(color: Colors.white, boxShadow: [
           BoxShadow(color: Colors.black38, blurRadius: 5, offset: Offset(0, 2))
         ]),
-        height: ScreenUtil().setWidth(150),
+        height: ScreenUtil().setHeight(150),
         child: Row(
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             Container(
-              color: Colors.green,
+              color: Color(0xff13DF4C),
               width: 40,
             ),
             Expanded(
@@ -600,13 +601,13 @@ class _TransactionFinished extends StatelessWidget {
                 color: Colors.white,
                 child: Column(children: <Widget>[
                   Container(child: Text("No Transaksi",textAlign: TextAlign.left,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold),),width: double.infinity,),
-                  Container(child: Text("8989-2831-1233-3444",textAlign: TextAlign.right,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold,color: Colors.green)),width: double.infinity,),
+                  Container(child: Text("8989-2831-1233-3444",textAlign: TextAlign.right,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold,color: Color(0xff13DF4C))),width: double.infinity,),
                   Container(child: Text("Tanggal Pemesanan",textAlign: TextAlign.left,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold),),width: double.infinity,),
-                  Container(child: Text("08 Februari 2019",textAlign: TextAlign.right,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold,color: Colors.green),),width: double.infinity,),
+                  Container(child: Text("08 Februari 2019",textAlign: TextAlign.right,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold,color: Color(0xff13DF4C)),),width: double.infinity,),
                   Container(child: Text("Tanggal Terima",textAlign: TextAlign.left,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold),),width: double.infinity,),
-                  Container(child: Text("10 Februari 2019",textAlign: TextAlign.right,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold,color: Colors.green),),width: double.infinity,),
+                  Container(child: Text("10 Februari 2019",textAlign: TextAlign.right,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold,color: Color(0xff13DF4C)),),width: double.infinity,),
                   Container(child: Text("Total",textAlign: TextAlign.left,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold),),width: double.infinity,),
-                  Container(child: Text("Rp. 200000",textAlign: TextAlign.right,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold,color: Colors.green),),width: double.infinity,),
+                  Container(child: Text("Rp. 200000",textAlign: TextAlign.right,style: TextStyle(fontSize:ScreenUtil().setSp(13),fontWeight: FontWeight.bold,color: Color(0xff13DF4C)),),width: double.infinity,),
                 ],)
               ),
             ),
@@ -628,11 +629,11 @@ class _TransactionCanceled extends StatelessWidget {
       separatorBuilder: (ctx, _) => SizedBox(
         height: 10,
       ),
-      itemBuilder: (Ctx, index) => Container(
+      itemBuilder: (ctx, index) => Container(
         decoration: BoxDecoration(color: Colors.white, boxShadow: [
           BoxShadow(color: Colors.black38, blurRadius: 5, offset: Offset(0, 2))
         ]),
-        height: ScreenUtil().setWidth(150),
+        height: ScreenUtil().setHeight(150),
         child: Row(
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
