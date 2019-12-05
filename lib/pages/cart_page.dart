@@ -140,7 +140,7 @@ class _CartItem extends StatelessWidget {
                   AspectRatio(
                     aspectRatio: 3 / 4,
                     child: CachedNetworkImage(
-                      imageUrl: cart.product.imageList[0],
+                      imageUrl: cart.product.productImages[0],
                     ),
                   ),
                   Expanded(

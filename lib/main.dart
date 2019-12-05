@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pertani_shop/bloc/auth/bloc/index.dart';
 import 'package:pertani_shop/bloc/cart/bloc/bloc.dart';
 import 'package:pertani_shop/bloc/cart/bloc/events.dart';
 import 'package:pertani_shop/bloc/category/bloc/index.dart';
@@ -68,11 +69,29 @@ class _LandingPageState extends State<LandingPage> {
     ScreenUtil.instance =
         ScreenUtil(width: 360, height: 640, allowFontScaling: true)
           ..init(context);
-    return loggedIn
-        ? HomePage(
-            logout: logout,
-          )
-        : LoginPage(login: login);
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<FilterBloc>(builder: (ctx) => FilterBloc()),
+        BlocProvider<AuthBloc>(builder: (ctx) => AuthBloc()),
+        BlocProvider<CategoryBloc>(
+          builder: (ctx) => CategoryBloc()..dispatch(CategoryInitialize()),
+        ),
+        BlocProvider<CartBloc>(
+          builder: (ctx) => CartBloc()..dispatch(CartFetch()),
+        )
+      ],
+      child: BlocBuilder<AuthBloc, AuthState>(
+        builder: (ctx, state) {
+          if (state is AuthUnauthorized) {
+            return LoginPage();
+          } else {
+            return HomePage(
+              logout: () {},
+            );
+          }
+        },
+      ),
+    );
   }
 }
 
@@ -107,32 +126,28 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-        providers: [
-          BlocProvider<FilterBloc>(builder: (ctx)=>FilterBloc()),
-          BlocProvider<CategoryBloc>(builder: (ctx)=>CategoryBloc()..dispatch(CategoryInitialize()),),
-          BlocProvider<CartBloc>(builder: (ctx)=>CartBloc()..dispatch(CartFetch()),)
+    return CustomScaffold(
+      endDrawer: _currentPage == 0
+          ? FilterDrawer()
+          : _currentPage == 1 ? CreateTransactionDrawer() : null,
+      bottomNavigationBar: _CustomBottomNavigationBar(
+        currentIndex: _currentPage,
+        changePage: _changePage,
+      ),
+      body: PageView(
+        controller: _pageController,
+        physics: NeverScrollableScrollPhysics(),
+        children: <Widget>[
+          ProductPage(),
+          CartPage(),
+          MainPage(),
+          TransactionPage(),
+          UserPage(
+            logout: widget.logout,
+          ),
         ],
-        child: CustomScaffold(
-          endDrawer: _currentPage == 0 ? FilterDrawer() : _currentPage==1?CreateTransactionDrawer():null,
-          bottomNavigationBar: _CustomBottomNavigationBar(
-            currentIndex: _currentPage,
-            changePage: _changePage,
-          ),
-          body: PageView(
-            controller: _pageController,
-            physics: NeverScrollableScrollPhysics(),
-            children: <Widget>[
-              ProductPage(),
-              CartPage(),
-              MainPage(),
-              TransactionPage(),
-              UserPage(
-                logout: widget.logout,
-              ),
-            ],
-          ),
-        ));
+      ),
+    );
   }
 }
 
@@ -218,7 +233,6 @@ class _CustomBNBButton extends StatelessWidget {
                         button["icon"],
                         color: Colors.white,
                         size: ScreenUtil().setWidth(28),
-                        
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -232,8 +246,9 @@ class _CustomBNBButton extends StatelessWidget {
                             button["label"],
                             style: TextStyle(
                               fontSize: ScreenUtil().setSp(12),
-                                color: Color(0xff13DF4C),
-                                fontWeight: FontWeight.bold,),
+                              color: Color(0xff13DF4C),
+                              fontWeight: FontWeight.bold,
+                            ),
                           )
                         ],
                       ),
@@ -244,7 +259,7 @@ class _CustomBNBButton extends StatelessWidget {
               duration: Duration(milliseconds: 500),
               height: 5,
               width: double.infinity,
-              color: active ? Color(0xff13DF4C):Color(0xffC5EC3E) ,
+              color: active ? Color(0xff13DF4C) : Color(0xffC5EC3E),
             ),
           ],
         ));

@@ -89,10 +89,10 @@ class __ProductDetailBodyState extends State<_ProductDetailBody> {
                 children: <Widget>[
                   PageView.builder(
                     controller: _pageController,
-                    itemCount: widget.product.imageList.length,
+                    itemCount: widget.product.productImages.length,
                     itemBuilder: (context, index) {
                       return CachedNetworkImage(
-                        imageUrl: widget.product.imageList[index],
+                        imageUrl: widget.product.productImages[index],
                       );
                     },
                   ),
@@ -105,7 +105,7 @@ class __ProductDetailBodyState extends State<_ProductDetailBody> {
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: _buildIndicator(
-                              length: widget.product.imageList.length),
+                              length: widget.product.productImages.length),
                         ),
                       ),
                     ],
@@ -166,7 +166,7 @@ class __ProductDetailBodyState extends State<_ProductDetailBody> {
                     ),
                     Container(),
                     Text(
-                      "${widget.product.category.name}",
+                      "${widget.product.productCategory.name}",
                       style: TextStyle(
                           color: Colors.orange, fontWeight: FontWeight.w700),
                     ),

@@ -24,7 +24,7 @@ class Cart extends Equatable {
     return Cart(
         id: map["id"],
         amount: map["amount"],
-        product: Product.fromMap(map["product"]));
+        product: Product.fromMap(map: map["product"]));
   }
 
   Map<String, dynamic> toMap() {
@@ -35,7 +35,7 @@ class Cart extends Equatable {
       "product": {
         "id": product.id,
         "name": product.name,
-        "imageList": product.imageList,
+        "productImages": product.productImages,
         "price": product.price,
         "stock": product.stock
       }

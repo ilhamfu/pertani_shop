@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pertani_shop/bloc/product_list/bloc/index.dart';
+import 'package:pertani_shop/models/product.dart';
 import 'package:pertani_shop/pages/chat_page.dart';
 import 'package:pertani_shop/utils/pertani_icon_icons.dart';
 
@@ -38,32 +41,62 @@ class _MainPageState extends State<MainPage> {
                   height: ScreenUtil().setWidth(80),
                 ),
               ),
-              SliverGrid(
-                delegate: SliverChildBuilderDelegate(
-                    (ctx, index) => _ProductItem(
-                          index: index,
-                        ),
-                    childCount: 100),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    childAspectRatio: 0.75,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                    crossAxisCount: 2),
-              )
+              BlocBuilder<ProductListBloc, ProductListState>(
+                bloc: ProductListBloc()..dispatch(ProductListInitialize()),
+                builder: (ctx, state) {
+                  if ((state is ProductListStatus) &&
+                      (state.status == ProductListStatus.PRODUCT_LIST_FETCHING))
+                    return SliverToBoxAdapter(
+                      child: Container(),
+                    );
+                  if (state is ProductListInitialized)
+                    return SliverGrid(
+                      delegate: SliverChildBuilderDelegate(
+                          (ctx, index) => _ProductItem(
+                                product: state.product[index],
+                              ),
+                          childCount: state.length),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          childAspectRatio: 0.75,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                          crossAxisCount: 2),
+                    );
+                  
+                  return SliverToBoxAdapter(
+                      child: Container(),
+                    );
+                },
+              ),
             ],
           ),
         )),
       ],
     );
   }
+
+  // SliverGrid _buildMain() {
+  //   return SliverGrid(
+  //     delegate: SliverChildBuilderDelegate(
+  //         (ctx, index) => _ProductItem(
+  //               index: index,
+  //             ),
+  //         childCount: 100),
+  //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+  //         childAspectRatio: 0.75,
+  //         mainAxisSpacing: 10,
+  //         crossAxisSpacing: 10,
+  //         crossAxisCount: 2),
+  //   );
+  // }
 }
 
 class _ProductItem extends StatelessWidget {
   const _ProductItem({
     Key key,
-    this.index,
+    this.product,
   }) : super(key: key);
-  final int index;
+  final Product product;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -76,7 +109,7 @@ class _ProductItem extends StatelessWidget {
           ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: CachedNetworkImage(
-                imageUrl: "https://picsum.photos/id/$index/300/400",
+                imageUrl: product.productImages[0],
                 placeholder: (ctx, str) =>
                     Image.asset("assets/product_placeholder.png"),
                 errorWidget: (ctx, str, err) =>
@@ -94,7 +127,7 @@ class _ProductItem extends StatelessWidget {
                   Container(
                       height: 25,
                       child: Center(
-                          child: Text("Rp. 20000",
+                          child: Text("Rp. ${product.price}",
                               style: TextStyle(
                                   color: Colors.black,
                                   fontSize: ScreenUtil().setSp(15),
@@ -103,7 +136,7 @@ class _ProductItem extends StatelessWidget {
                         color: Colors.white.withOpacity(.75),
                       )),
                   Text(
-                    "Nama Produk $index",
+                    product.name,
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w500,
@@ -177,7 +210,8 @@ class _CustomAppBar extends StatelessWidget {
             child: InkWell(
                 splashColor: Colors.white,
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=>ChatPage(),fullscreenDialog: true));
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (ctx) => ChatPage(), fullscreenDialog: true));
                 },
                 child: Icon(
                   PertaniIcon.chat,

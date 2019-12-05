@@ -12,7 +12,7 @@ class User extends Equatable {
   final bool active;
   final bool complete;
   final bool verified;
-
+  
   String get fullName => "$firstName $lastName";
 
   User(

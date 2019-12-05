@@ -22,6 +22,17 @@ class ProductPage extends StatefulWidget {
 class __HeaderState extends State<_Header> {
   FocusNode searchFocusNode = FocusNode();
   TextEditingController _searchController = new TextEditingController();
+
+  _searchOnSubmit(value) {
+    BlocProvider.of<FilterBloc>(context)
+        .dispatch(FilterSetSearch(search: value));
+    _searchController.text = "";
+  }
+
+  _openEndDrawer() {
+    Scaffold.of(context).openEndDrawer();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -36,10 +47,7 @@ class __HeaderState extends State<_Header> {
             child: TextField(
                 controller: _searchController,
                 maxLines: 1,
-                onSubmitted: (value) {
-                  BlocProvider.of<FilterBloc>(context).dispatch(FilterSetSearch(search: value));
-                  _searchController.text="";
-                },
+                onSubmitted: _searchOnSubmit,
                 focusNode: searchFocusNode,
                 decoration: InputDecoration(
                   hintText: "Search",
@@ -63,9 +71,7 @@ class __HeaderState extends State<_Header> {
               color: Colors.transparent,
               child: InkWell(
                 splashColor: Colors.white,
-                onTap: () {
-                  Scaffold.of(context).openEndDrawer();
-                },
+                onTap: _openEndDrawer,
                 child: Center(
                     child: Icon(
                   PertaniIcon.filter_filled_tool_symbol,
@@ -111,19 +117,21 @@ class _ProductCard extends StatelessWidget {
     this.product,
   }) : super(key: key);
 
+  _openDetailPage({BuildContext context})=>() {
+        Navigator.of(context).pushNamed('/detail', arguments: product);
+        FocusScope.of(context).unfocus();
+      };
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        Navigator.of(context).pushNamed('/detail', arguments: product);
-        FocusScope.of(context).unfocus();
-      },
+      onTap: _openDetailPage(context: context),
       child: Column(
         children: <Widget>[
           ClipRRect(
             borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
             child: CachedNetworkImage(
-              imageUrl: product.imageList[0] ?? "",
+              imageUrl: product.getThumbnail() ?? "",
               errorWidget: (_, __, ___) =>
                   Image.asset("assets/product_placeholder.png"),
               placeholder: (_, __) =>
@@ -191,7 +199,8 @@ class _ProductPageBody extends StatelessWidget {
       _filterString.add({
         "text": 'Nama "${filter.search}"',
         "tap": () {
-          BlocProvider.of<FilterBloc>(ctx).dispatch(FilterSetSearch(search: ""));
+          BlocProvider.of<FilterBloc>(ctx)
+              .dispatch(FilterSetSearch(search: ""));
         }
       });
     }
@@ -371,6 +380,22 @@ class _SlidingProductCard extends StatelessWidget {
   const _SlidingProductCard({Key key, this.index, this.product})
       : super(key: key);
 
+  _showAddToCartDialog({@required BuildContext context}) => () async {
+        var amount = await showModalBottomSheet<int>(
+                builder: (ctx) {
+                  return AddToCartWidget(
+                    product: product,
+                  );
+                },
+                context: context,
+                isScrollControlled: true,
+                shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(10)))) ??
+            0;
+        if (amount > 0) return;
+      };
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -396,21 +421,7 @@ class _SlidingProductCard extends StatelessWidget {
                     color: Color(0xff0FC442),
                     foregroundColor: Colors.white,
                     icon: Icons.add_shopping_cart,
-                    onTap: () async {
-                      var amount = (await showModalBottomSheet<int>(
-                              builder: (ctx) {
-                                return AddToCartWidget(
-                                  product: product,
-                                );
-                              },
-                              context: context,
-                              isScrollControlled: true,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(10))))) ??
-                          0;
-                      if (amount == 0) return;
-                    },
+                    onTap: _showAddToCartDialog(context: context),
                   ),
                 ]
               : [
@@ -426,21 +437,7 @@ class _SlidingProductCard extends StatelessWidget {
                     color: Color(0xff0FC442),
                     foregroundColor: Colors.white,
                     icon: Icons.add_shopping_cart,
-                    onTap: () async {
-                      var amount = await showModalBottomSheet<int>(
-                              builder: (ctx) {
-                                return AddToCartWidget(
-                                  product: product,
-                                );
-                              },
-                              context: context,
-                              isScrollControlled: true,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(10)))) ??
-                          0;
-                      if (amount > 0) return;
-                    },
+                    onTap: _showAddToCartDialog(context: context),
                   ),
                   IconSlideAction(
                     color: Colors.orange,

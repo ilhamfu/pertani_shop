@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pertani_shop/bloc/auth/bloc/index.dart';
 import 'package:pertani_shop/utils/pertani_icon_icons.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -6,8 +8,7 @@ const Color primaryColor = Color(0xFF13DF4C);
 const Color secondaryColor = Color(0xFFC5EC3E);
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key key, this.login}) : super(key: key);
-  final Function login;
+  LoginPage({Key key}) : super(key: key);
   _LoginPageState createState() => _LoginPageState();
 }
 
@@ -27,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
                   end: Alignment.bottomRight)),
           child: SingleChildScrollView(
               physics: NeverScrollableScrollPhysics(),
-              child: new _LoginPageBody(login:widget.login)),
+              child: new _LoginPageBody()),
         ),
       ),
     );
@@ -36,29 +37,30 @@ class _LoginPageState extends State<LoginPage> {
 
 class _LoginPageBody extends StatelessWidget {
   const _LoginPageBody({
-    Key key, this.login,
+    Key key,
   }) : super(key: key);
 
-  final Function login;
-
-  void loginTwitter() {
+  void loginTwitter(BuildContext context) {
     print("Login With Twitter");
-    login();
+    BlocProvider.of<AuthBloc>(context).dispatch(AuthLogInTwitter());
   }
 
-  void loginEmail() {
+  void loginPassword(BuildContext context, {String email, String password}) {
     print("Login With Email");
-    login();
+    BlocProvider.of<AuthBloc>(context)
+        .dispatch(AuthLogInPassword(email: email, password: password));
   }
 
-  void loginFacebook() {
-    print("Login With Facebook");
-    login();
+  void loginFacebook(
+    BuildContext context,
+  ) {
+    BlocProvider.of<AuthBloc>(context).dispatch(AuthLogInFacebook());
   }
 
-  void loginGoogle() {
-    print("Login With Google");
-    login();
+  void loginGoogle(
+    BuildContext context,
+  ) {
+    BlocProvider.of<AuthBloc>(context).dispatch(AuthLogInGoogle());
   }
 
   @override
@@ -83,7 +85,7 @@ class _LoginPageBody extends StatelessWidget {
             image: DecorationImage(image: AssetImage("assets/logo.png")),
           ),
         ),
-        new _LoginControl(loginEmail: loginEmail),
+        new _LoginControl(loginPassword: loginPassword),
         Container(
           decoration: BoxDecoration(color: Colors.white, boxShadow: [
             BoxShadow(color: Colors.white.withOpacity(.5), blurRadius: 4)
@@ -173,17 +175,23 @@ class _SocialLogin extends StatelessWidget {
               {
                 "color": Color(0xff385cbe),
                 "icon": PertaniIcon.facebook,
-                "onTap": loginFacebook
+                "onTap": () {
+                  loginFacebook(context);
+                }
               },
               {
                 "color": Color(0xff76A9EA),
                 "icon": PertaniIcon.twitter,
-                "onTap": loginTwitter
+                "onTap": () {
+                  loginTwitter(context);
+                }
               },
               {
                 "color": Color(0xff7f34a38),
                 "icon": PertaniIcon.google_plus,
-                "onTap": loginGoogle
+                "onTap": () {
+                  loginGoogle(context);
+                }
               },
             ]
                 .map(
@@ -228,27 +236,29 @@ class _SocialLogin extends StatelessWidget {
 class _LoginControl extends StatefulWidget {
   const _LoginControl({
     Key key,
-    this.loginEmail,
+    this.loginPassword,
   }) : super(key: key);
 
-  final Function loginEmail;
+  final Function loginPassword;
 
   @override
   __LoginControlState createState() => __LoginControlState();
 }
 
 class __LoginControlState extends State<_LoginControl> {
+  GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10,vertical: 8),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       child: Form(
+        key: _formKey,
         child: Column(
           children: <Widget>[
             Padding(
               padding: EdgeInsets.symmetric(vertical: 8),
               child: TextFormField(
-                
                 maxLines: 1,
                 style: TextStyle(fontSize: ScreenUtil().setSp(18)),
                 decoration: InputDecoration(
@@ -295,7 +305,9 @@ class __LoginControlState extends State<_LoginControl> {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: widget.loginEmail,
+                  onTap: () {
+                    widget.loginPassword(context, "", "");
+                  },
                   child: Center(
                       child: Text("Masuk",
                           style: TextStyle(

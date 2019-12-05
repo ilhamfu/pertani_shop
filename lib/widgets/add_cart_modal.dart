@@ -103,7 +103,7 @@ class _AddToCartWidgetState extends State<AddToCartWidget> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: CachedNetworkImage(
-                      imageUrl: widget.product.imageList[0] ?? "",
+                      imageUrl: widget.product.getThumbnail(),
                       height: ScreenUtil().setHeight(100),
                       width: ScreenUtil().setHeight(75),
                     ),

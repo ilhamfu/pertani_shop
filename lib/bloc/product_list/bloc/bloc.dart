@@ -25,7 +25,7 @@ class ProductListBloc extends Bloc<ProductListEvent, ProductListState> {
 
   Stream<ProductListState> _mapProductListFetch(ProductListFetch event) async *{
     yield ProductListStatus(status: ProductListStatus.PRODUCT_LIST_FETCHING);
-    await Future.delayed(Duration(seconds: 10));
-    yield ProductListInitialized(product: []);
+    final data = await _productListApiClient.fetchProduct();
+    yield ProductListInitialized(product: data);
   }
 }

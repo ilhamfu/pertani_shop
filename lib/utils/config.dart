@@ -1,0 +1,5 @@
+class Config{
+  static const SERVER_ADDRESS = "http://192.168.100.100";
+  static const AUTH = "Bearer eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyIiwiaWF0IjoxNTc0OTk3Njg3LCJleHAiOjE1NzYyMDcyODd9.QkZjbRAtBV_avyNqOMkdtAaSM2ra9STgrSFP8rSdRsuC5WGQSsQq0i8oOCkjxwDiHHpj4YfJrDZ_fWJB1xSCdhMABHI9BYcXaPQkif3xsGWYyQX9eBzrjJFxlFKcKJdTSe1XCS0Ij64JT1MRBZDOKmtpYJN9pHj73g0jtffeNjc";
+  
+}

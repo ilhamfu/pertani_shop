@@ -67,21 +67,21 @@ class TransactionDetail extends Equatable {
   factory TransactionDetail.fromMap(Map<String, dynamic> map) {
     return TransactionDetail(
         id: map["id"],
-        product: Product.fromMap(map["product"]),
+        product: Product.fromMap(map: map["product"]),
         price: map["price"],
         total: map["total"],
         rate: map["rate"],
         testimony: map["testimony"]);
   }
 
-  Map<String,dynamic> toMap(){
+  Map<String, dynamic> toMap() {
     return {
-      "id":this.id,
-      "product":this.product.id,
-      "price":this.price,
-      "total":this.total,
-      "rate":this.rate,
-      "testimony":this.testimony,
+      "id": this.id,
+      "product": this.product.id,
+      "price": this.price,
+      "total": this.total,
+      "rate": this.rate,
+      "testimony": this.testimony,
     };
   }
 }
@@ -137,15 +137,15 @@ class Transaction extends Equatable {
 
   Map<String, dynamic> toMap() {
     return {
-      "id":this.id,
-      "detail":this.detail,
-      "history":this.history,
-      "transactionStatus":this.transactionStatus,
-      "cod":this.cod,
-      "canceled":this.canceled,
-      "canceledDate":this.canceledDate,
-      "duePayment":this.duePayment,
-      "total":this.total,
+      "id": this.id,
+      "detail": this.detail,
+      "history": this.history,
+      "transactionStatus": this.transactionStatus,
+      "cod": this.cod,
+      "canceled": this.canceled,
+      "canceledDate": this.canceledDate,
+      "duePayment": this.duePayment,
+      "total": this.total,
     };
   }
 }

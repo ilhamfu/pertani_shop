@@ -22,10 +22,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
   Stream<CartState> _mapCartFetchToState() async* {
     yield CartInitialized(carts: [
-      new Cart(active: true,amount: 650,id: 0,product: Product(id: 0,imageList: ["https://picsum.photos/100/100"],price: 30000,name:"product 1")),
-      new Cart(active: true,amount: 1000,id: 1,product: Product(id: 0,imageList: ["https://picsum.photos/100/100"],price: 25000,name:"product 2")),
-      new Cart(active: true,amount: 100,id: 2,product: Product(id: 0,imageList: ["https://picsum.photos/100/100"],price: 33000,name:"product 3")),
-      new Cart(active: true,amount: 10,id: 3,product: Product(id: 0,imageList: ["https://picsum.photos/100/100"],price: 80000,name:"product 4")),
+      
     ]);
   }
   Stream<CartState> _mapCartUpdateToState() async* {
